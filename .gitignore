@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+/.vs/FMI_Project_2425_MyFitnessPal
+/.vs/ProjectSettings.json
+/.vs
+/MyFitnessPal/.vs/MyFitnessPal
+/MyFitnessPal/x64/Debug
+/MyFitnessPal/MyFitnessPal/x64/Debug
