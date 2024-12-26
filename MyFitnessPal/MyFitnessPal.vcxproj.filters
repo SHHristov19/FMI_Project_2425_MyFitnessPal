@@ -26,20 +26,40 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mfp.bll.cpp">
+    <ClCompile Include="bll.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mfp.dal.cpp">
+    <ClCompile Include="dal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mfp.main.cpp">
+    <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mfp.pl.cpp">
+    <ClCompile Include="pl.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="mfp.tools.cpp">
+    <ClCompile Include="tools.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\dailySummaries.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\goals.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\macronutrientRatios.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\meals.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\users.csv">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="data\workouts.csv">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

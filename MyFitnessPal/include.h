@@ -9,40 +9,68 @@
 #include "models.h"
 #include "constants.h"
 
-namespace mfp::pl
+namespace pl
 {
 
 }
 
-namespace mfp::bll
+namespace bll
 {
 	void signUp();
+	void signIn();
+
+	char enterValidType(const char types[], size_t typeSize, std::string errorMsg);
+	float enterValidType(const float types[], size_t typeSize, std::string errorMsg);
+	std::string enterValidType(const std::string types[], size_t typeSize, std::string errorMsg);
+
+
+	void addMealForUser(User user);
+	void addWorkoutForUser(User user);
 }
 
-namespace mfp::dal
+namespace dal
 {
 	// Read data from files
-	std::vector<std::vector<User>> readDataFromUsersFile(std::string fileName);
-	std::vector<std::vector<Goal>> readDataFromGoalsFile(std::string fileName);
-	std::vector<std::vector<Meal>> readDataFromMealsFile(std::string fileName);
-	std::vector<std::vector<Workout>> readDataFromWorkoutsFile(std::string fileName); 
-	std::vector<std::vector<DailySummary>> readDataFromDailySummariesFile(std::string fileName);
-	std::vector<std::vector<MacronutrientRatio>> readDataFromMacronutrientRatioFile(std::string fileName);
+	std::vector<User> readDataFromUsersFile();
+	std::vector<Goal> readDataFromGoalsFile();
+	std::vector<Meal> readDataFromMealsFile();
+	std::vector<Workout> readDataFromWorkoutsFile(); 
+	std::vector<DailySummary> readDataFromDailySummariesFile();
+	std::vector<MacronutrientRatio> readDataFromMacronutrientRatiosFile();
 
 	// Write data to files
-	void writeDataToUsersFile(std::string fileName, User data);
-	void writeDataToGoalsFile(std::string fileName, std::vector<Goal> data);
-	void writeDataToMealsFile(std::string fileName, std::vector<Meal> data);
-	void writeDataToWorkoutsFile(std::string fileName, std::vector<Workout> data);
-	void writeDataToDailySummariesFile(std::string fileName, std::vector<DailySummary> data);
-	void writeDataToMacronutrientRatioFile(std::string fileName, std::vector<MacronutrientRatio> data);
+	void writeDataToUsersFile(User user);
+	void writeDataToGoalsFile(Goal goal);
+	void writeDataToMealsFile(Meal meal);
+	void writeDataToWorkoutsFile(Workout workout);
+	void writeDataToDailySummariesFile(DailySummary dailySummary);
+	void writeDataToMacronutrientRatioFile(MacronutrientRatio macronutrientRatio);
 
+	// Update data from file
+	void updateOrDeleteUser(User user, bool isUpdate);
+	void updateOrDeleteGoal(Goal goal, bool isUpdate);
+	void updateOrDeleteMeal(Meal meal, bool isUpdate);
+	void updateOrDeleteWorkout(Workout workout, bool isUpdate);
+	void updateOrDeleteDailySummary(DailySummary dailySummary, bool isUpdate);
+	void updateOrDeleteMacronutrientRatio(MacronutrientRatio macronutrientRatio, bool isUpdate);
 
+	User findUserByUsernameAndPassword(std::string username, std::string password);
+	User getUserById(std::string id);
+	Goal getGoalById(std::string id);
+	Meal getMealById(std::string id);
+	Workout getWorkoutById(std::string id);
+
+	std::vector<Goal> getGoalsByUserId(std::string id);
+	std::vector<Meal> getMealsByUserId(std::string id);
+	std::vector<Workout> getWorkoutsByUserId(std::string id);
+	std::vector<DailySummary> getDailySummariesByUserId(std::string id);
+	std::vector<MacronutrientRatio> getMacronutrientRatioByUserId(std::string id);
 }
 
-namespace mfp::tools
+namespace tools
 {
 	void to_upper(std::string& data);
 	std::string passwordHash(const std::string& password);
-	std::string getDate();
+	std::string getDatetime();
+	std::string generateGUID();
 }

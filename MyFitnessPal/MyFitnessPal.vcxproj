@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -133,11 +133,19 @@
     <ClInclude Include="models.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="mfp.bll.cpp" />
-    <ClCompile Include="mfp.dal.cpp" />
-    <ClCompile Include="mfp.main.cpp" />
-    <ClCompile Include="mfp.pl.cpp" />
-    <ClCompile Include="mfp.tools.cpp" />
+    <ClCompile Include="bll.cpp" />
+    <ClCompile Include="dal.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="pl.cpp" />
+    <ClCompile Include="tools.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="data\dailySummaries.csv" />
+    <None Include="data\goals.csv" />
+    <None Include="data\macronutrientRatios.csv" />
+    <None Include="data\meals.csv" />
+    <None Include="data\users.csv" />
+    <None Include="data\workouts.csv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

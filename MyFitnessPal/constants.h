@@ -3,11 +3,19 @@
 // Struct-like representation for Activity Level
 struct ActivityLevel 
 {
-    const int VeryActive = 0; // Много активен
-    const int ActiveJob = 1; // Активна работа
-    const int ModerateActivity = 2; // Умерена активност
-    const int LightActivity = 3; // Лека активност
-    const int SedentaryJob = 4; // Седяща работа
+    const int VeryActive = 1; // Много активен
+    const int ActiveJob = 2; // Активна работа
+    const int ModerateActivity = 3; // Умерена активност
+    const int LightActivity = 4; // Лека активност
+    const int SedentaryJob = 5; // Седяща работа
+};
+
+// Struct - like representation for Goals
+struct GoalType 
+{
+    const int LoseWeight = 1; // Lose weight
+    const int MaintainWeight = 2; // Maintain weight
+    const int GainWeight = 3; // Gain weight
 };
 
 // BMR Constants
@@ -22,11 +30,11 @@ const double BMR_HEIGHT_MULTIPLIER_WOMEN = 3.098;
 const double BMR_AGE_MULTIPLIER_WOMEN = 4.330;
 
 // Activity Coefficients
-const double ACTIVITY_SEDENTARY = 1.2;
-const double ACTIVITY_LIGHT = 1.375;
-const double ACTIVITY_MODERATE = 1.55;
-const double ACTIVITY_ACTIVE = 1.725;
 const double ACTIVITY_VERY_ACTIVE = 1.9;
+const double ACTIVITY_ACTIVE = 1.725;
+const double ACTIVITY_MODERATE = 1.55;
+const double ACTIVITY_LIGHT = 1.375;
+const double ACTIVITY_SEDENTARY = 1.2;
 
 // Weight Loss and Gain Constants
 const int CALORIES_PER_KG = 7700;
@@ -56,7 +64,21 @@ const double MACRO_RATIO_GAIN_CARBOHYDRATES = 0.35;
 // File Names
 const std::string USERS_FILE_NAME = "data/users.csv";
 const std::string GOALS_FILE_NAME = "data/goals.csv";
-const std::string MEALS_FILE_NAME = "../data/meals.csv";
-const std::string WORKOUTS_FILE_NAME = "../data/workouts.csv";
-const std::string DAILY_SUMMARIES_FILE_NAME = "../data/daily_summaries.csv";
-const std::string MACRONUTRIENT_RATIO_FILE_NAME = "../data/macronutrient_ratios.csv";
+const std::string MEALS_FILE_NAME = "data/meals.csv";
+const std::string WORKOUTS_FILE_NAME = "data/workouts.csv";
+const std::string DAILY_SUMMARIES_FILE_NAME = "data/daily_summaries.csv";
+const std::string MACRONUTRIENT_RATIO_FILE_NAME = "data/macronutrient_ratios.csv";
+
+// File Headers
+const std::string USERS_FILE_HEADER = "id,first_name,last_name,age,gender,height,weight,activity_level,goal_id,username,password,type,created_on";
+const std::string GOALS_FILE_HEADER = "id,type,weekly_change,calorie_adjustment";
+const std::string MEALS_FILE_HEADER = "id,name,calories,protein,fat,carbohydrates,created_by,created_on";
+const std::string WORKOUTS_FILE_HEADER = "id,name,calories_burned,created_by,created_on";
+const std::string DAILY_SUMMARIES_FILE_HEADER = "id,user_id,date,calories_consumed,calories_burned,recommended_calories,calorie_balance,protein,fat,carbohydrates,created_on";
+const std::string MACRONUTRIENT_RATIO_FILE_HEADER = "id,goal_id,protein_ratio,fat_ratio,carbohydrate_ratio";
+
+const char GENTER_TYPES[] = { 'M', 'F' };
+const char ACTIVITY_LEVEL_TYPES[] = { '1', '2', '3', '4', '5' };
+const char GOAL_TYPES[] = { '1', '2', '3' };
+const float GOAL_WEEKLY_CHANGES[] = { 0.25, 0.50, 0.75, 1 };
+const std::string USER_ACCOUNT_TYPE[] = { "Standard", "Premium" };

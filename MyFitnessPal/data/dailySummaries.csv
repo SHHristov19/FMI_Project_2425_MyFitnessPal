@@ -1,1 +1,1 @@
-id,user_id,date,calories_consumed,calories_burned,recommended_calories,calorie_balance
+id,user_id,date,calories_consumed,calories_burned,recommended_calories,calorie_balance,protein,fat,carbohydrates,created_on
