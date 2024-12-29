@@ -72,8 +72,7 @@ namespace bll
         std::cout << "Enter your username: ";
         std::getline(std::cin, user.username);
 
-        std::cout << "Enter your password: ";
-        std::getline(std::cin, user.password);
+		user.password = enterValidPassword(user.password);
 
 		user.password = tools::passwordHash(user.password);
 		user.created_on = tools::getDatetime(); 
@@ -96,7 +95,8 @@ namespace bll
 			std::cout << "You have successfully logged in!" << std::endl;
 			std::cout << "Welcome, " << findUser.first_name << " " << findUser.last_name << "!" << std::endl;
 			std::cout << "To add a meal press 1" << std::endl;
-			std::cout << "To add a workout press 2" << std::endl;
+			std::cout << "To see your meals press 2" << std::endl;
+			std::cout << "To add a workout press 3" << std::endl;
 			std::cout << "To exit press E" << std::endl;
 
 			char input;
@@ -110,6 +110,10 @@ namespace bll
 				}
 				else if (input == '2')
 				{
+					//getMealsForUser(findUser);
+				}
+				else if (input == '3')
+				{
 					addWorkoutForUser(findUser);
 				}
 
@@ -122,6 +126,77 @@ namespace bll
 		else
 		{
 			std::cout << "Invalid username or password!" << std::endl;
+		}
+	}
+
+	std::string validatePassword(std::string password)
+	{
+		if (password.length() < 8)
+		{
+			return "Password must be at least 8 characters long!";
+		}
+
+		bool hasDigit = false;
+		bool hasLowercase = false;
+		bool hasUppercase = false;
+		bool hasSpecialCharacter = false;
+
+		for (size_t i = 0; i < password.length(); i++)
+		{
+			if (isdigit(password[i]))
+			{
+				hasDigit = true;
+			}
+			else if (islower(password[i]))
+			{
+				hasLowercase = true;
+			}
+			else if (isupper(password[i]))
+			{
+				hasUppercase = true;
+			}
+			else if (ispunct(password[i]))
+			{
+				hasSpecialCharacter = true;
+			}
+		}
+
+		if (!hasDigit)
+		{
+			return "Password must contain at least one digit!";
+		}
+
+		if (!hasLowercase)
+		{
+			return "Password must contain at least one lowercase letter!";
+		}
+
+		if (!hasUppercase)
+		{
+			return "Password must contain at least one uppercase letter!";
+		}
+
+		if (!hasSpecialCharacter)
+		{
+			return "Password must contain at least one special character!";
+		}
+
+		return "";
+	}
+
+	std::string enterValidPassword(std::string password)
+	{
+		while (true)
+		{
+			std::cout << "Enter your password: ";
+			std::getline(std::cin, password);
+
+			std::string errorMsg = validatePassword(password);
+			if (errorMsg == "")
+			{
+				return password;
+			}
+			std::cout << errorMsg << std::endl;
 		}
 	}
 
@@ -213,6 +288,11 @@ namespace bll
 		workout.created_on = tools::getDatetime();
 		dal::writeDataToWorkoutsFile(workout);
 	}
+
+	//void getMealsForUser(User user)
+	//{
+
+	//}
 
 	double calculateBMR(User user)
 	{

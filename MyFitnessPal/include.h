@@ -11,13 +11,19 @@
 
 namespace pl
 {
-
+	void printTitle();
+	void clearConsole();
+	void printAsciiDate();
 }
 
 namespace bll
 {
 	void signUp();
 	void signIn();
+
+	std::string enterValidPassword(std::string password);
+	std::string validatePassword(std::string password);
+
 
 	char enterValidType(const char types[], size_t typeSize, std::string errorMsg);
 	float enterValidType(const float types[], size_t typeSize, std::string errorMsg);

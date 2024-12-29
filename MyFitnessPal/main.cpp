@@ -2,5 +2,6 @@
 
 int main() 
 {
-	bll::signUp();
+	pl::printTitle();
+	pl::printAsciiDate();
 }
