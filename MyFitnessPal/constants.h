@@ -177,3 +177,5 @@ const std::string ASCII_SEPARATOR[6] = {
     " _ ",
     "(_)"
 };
+
+const std::string TABULATION = "\t\t\t\t\t";

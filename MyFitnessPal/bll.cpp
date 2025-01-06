@@ -11,41 +11,60 @@ namespace bll
 		GoalType goalType;
 		goal.id = tools::generateGUID();
 		user.goal_id = goal.id;
-
-		std::cout << "Enter your first name: ";
+		pl::printSignUpTitle();
+		std::cin.ignore();
+		std::cout << TABULATION << "Enter your first name: ";
 		std::getline(std::cin, user.first_name);
-		std::cout << "Enter your last name: ";
+		std::cout << TABULATION << "Enter your last name: ";
 		std::getline(std::cin, user.last_name);
 
-		std::cout << "Enter your age: ";
+		std::cout << TABULATION << "Enter your age: ";
 		std::cin >> user.age;
+		while (true)
+		{
+			if (std::cin.fail() || user.age < 0 || user.age > 100)
+			{
+				std::cin.clear();
+				tools::clearLine();
+				tools::colorRed();
+				std::cout << TABULATION << "Invalid input. Please enter a valid age." << std::endl;
+				tools::resetColor();
+				std::cin.ignore(); // Clear the input buffer
+				std::cout << TABULATION << "Enter your age: ";
+				std::cin >> user.age;
+			}
+			else
+			{
+				break;
+			}
+		}
 
-		std::cout << "Enter your gender [M/F]: ";
+		std::cout << TABULATION << "Enter your gender [M/F]: ";
 		user.gender = enterValidType(GENTER_TYPES, 2, "Invalid input. Please enter a valid gender [M/F]: ");
 
-		std::cout << "Enter your height (in cm): ";
+		std::cout << TABULATION << "Enter your height (in cm): ";
 		std::cin >> user.height;
-		std::cout << "Enter your weight (in kg): ";
+		std::cout << TABULATION << "Enter your weight (in kg): ";
 		std::cin >> user.weight;
 		std::cout << std::endl;
 
-		std::cout << "1. VeryActive" << std::endl;
-		std::cout << "2. ActiveJob" << std::endl;
-		std::cout << "3. ModerateActivity" << std::endl;
-		std::cout << "4. LightActivity" << std::endl;
-		std::cout << "5. SedentaryJob" << std::endl;
-		std::cout << "Enter your activity level [1-5]: ";
+		std::cout << TABULATION << "1. VeryActive" << std::endl;
+		std::cout << TABULATION << "2. ActiveJob" << std::endl;
+		std::cout << TABULATION << "3. ModerateActivity" << std::endl;
+		std::cout << TABULATION << "4. LightActivity" << std::endl;
+		std::cout << TABULATION << "5. SedentaryJob" << std::endl;
+		std::cout << TABULATION << "Enter your activity level [1-5]: ";
 		user.activity_level = enterValidType(ACTIVITY_LEVEL_TYPES, 5, "Invalid input. Please enter a valid activity level [1-5]: ");
 
-		std::cout << "1. LoseWeight" << std::endl;
-		std::cout << "2. MaintainWeight" << std::endl;
-		std::cout << "3. GainWeight" << std::endl;
-		std::cout << "Enter your goal type [1-3]: ";
+		std::cout << TABULATION << "1. LoseWeight" << std::endl;
+		std::cout << TABULATION << "2. MaintainWeight" << std::endl;
+		std::cout << TABULATION << "3. GainWeight" << std::endl;
+		std::cout << TABULATION << "Enter your goal type [1-3]: ";
 		goal.type = enterValidType(GOAL_TYPES, 3, "Invalid input. Please enter a valid goal type [1-3]: ");
 		
 		if (goal.type != '2')
 		{
-			std::cout << "Enter your weekly change [0.25, 0.5, 0.75, 1] in kg: ";
+			std::cout << TABULATION << "Enter your weekly change [0.25, 0.5, 0.75, 1] in kg: ";
 			goal.weekly_change = enterValidType(GOAL_WEEKLY_CHANGES, 4, "Invalid input. Please enter a valid weekly change [0.25, 0.5, 0.75, 1]: ");
 		
 			if (goal.weekly_change == 0.25f)
@@ -65,11 +84,11 @@ namespace bll
 				goal.calorie_adjustment = DAILY_DEFICIT_OR_SURPLUS_100KG;
 			}
 		}
-		std::cout << "Enter your type [Standard/Premium]: ";
+		std::cout << TABULATION << "Enter your type [Standard/Premium]: ";
 		user.type = enterValidType(USER_ACCOUNT_TYPE, 2, "Invalid input. Please enter a valid type [Standard/Premium]: ");
 
         std::cin.ignore();
-        std::cout << "Enter your username: ";
+        std::cout << TABULATION << "Enter your username: ";
         std::getline(std::cin, user.username);
 
 		user.password = enterValidPassword(user.password);
@@ -78,6 +97,8 @@ namespace bll
 		user.created_on = tools::getDatetime("%d.%m.%Y %T");
 		dal::writeDataToGoalsFile(goal);
 		dal::writeDataToUsersFile(user);
+
+		homePanel(user);
 	}
 
 	void signIn()
@@ -85,21 +106,22 @@ namespace bll
 		std::string username;
 		std::string password;
 		bool wrongInput = false;
-		std::cin.ignore();
+		
 		while (true)
 		{
 			pl::printLoginTitle();
-			
+			std::cin.ignore();
+
 			if (wrongInput)
 			{
 				tools::colorRed();
-				std::cout << "\t\t\t\t\tInvalid username or password! Try Again!";
+				std::cout << TABULATION << "Invalid username or password! Try Again!";
 				tools::resetColor();
 			}
 			
-			std::cout << "\n\t\t\t\t\tEnter your username: ";
+			std::cout << std::endl << TABULATION << "Enter your username: ";
 			std::getline(std::cin, username);
-			std::cout << "\t\t\t\t\tEnter your password: ";
+			std::cout << TABULATION << "Enter your password: ";
 			std::getline(std::cin, password);
 			password = tools::passwordHash(password);
 			User findUser = dal::findUserByUsernameAndPassword(username, password);
@@ -115,10 +137,41 @@ namespace bll
 		}
 	}
 
+	void mainPanel()
+	{
+		tools::clearConsole();
+		tools::setConsoleSize();
+		pl::printTitle();
+		pl::printMenuOptions();
+
+		while (true)
+		{
+			char input = tools::getInput();
+			switch (input)
+			{
+			case '1':
+				tools::clearConsole();
+				bll::signIn();
+				break;
+			case '2':
+				tools::clearConsole();
+				bll::signUp();
+				break;
+			case '3': 
+				std::exit(0); // Exit the program
+			default:
+				tools::clearLine();
+				break;
+			}
+		}
+	}
+
 	void homePanel(User user)
 	{
+		tools::clearConsole();
 		std::cout << "You have successfully logged in!" << std::endl;
 		std::cout << "Welcome, " << user.first_name << " " << user.last_name << "!" << std::endl;
+		pl::printAsciiDate();
 		std::cout << "To add a meal press 1" << std::endl;
 		std::cout << "To see your meals press 2" << std::endl;
 		std::cout << "To add a workout press 3" << std::endl;
@@ -152,6 +205,8 @@ namespace bll
 				break;
 			}
 		}
+
+		mainPanel();
 	}
 
 	std::string validatePassword(std::string password)
@@ -213,7 +268,7 @@ namespace bll
 	{
 		while (true)
 		{
-			std::cout << "Enter your password: ";
+			std::cout << TABULATION << "Enter your password: ";
 			std::getline(std::cin, password);
 
 			std::string errorMsg = validatePassword(password);

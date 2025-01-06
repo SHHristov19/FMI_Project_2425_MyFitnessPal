@@ -23,8 +23,11 @@ namespace pl
 
 namespace bll
 {
+	
+	void mainPanel();
 	void signUp();
 	void signIn();
+	void homePanel(User user);
 
 	std::string enterValidPassword(std::string password);
 	std::string validatePassword(std::string password);
