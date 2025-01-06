@@ -559,7 +559,7 @@ namespace dal
 		}
 	}
 
-	std::vector<Workout> getWorkoutByUserId(std::string id)
+	std::vector<Workout> getWorkoutsByUserId(std::string id)
 	{
 		std::vector<Workout> workouts = readDataFromWorkoutsFile(), result;
 

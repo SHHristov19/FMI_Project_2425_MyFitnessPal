@@ -75,7 +75,7 @@ namespace bll
 		user.password = enterValidPassword(user.password);
 
 		user.password = tools::passwordHash(user.password);
-		user.created_on = tools::getDatetime(); 
+		user.created_on = tools::getDatetime("%d.%m.%Y %T");
 		dal::writeDataToGoalsFile(goal);
 		dal::writeDataToUsersFile(user);
 	}
@@ -84,48 +84,73 @@ namespace bll
 	{
 		std::string username;
 		std::string password;
-		std::cout << "Enter your username: ";
-		std::getline(std::cin, username);
-		std::cout << "Enter your password: ";
-		std::getline(std::cin, password);
-		password = tools::passwordHash(password);
-		User findUser = dal::findUserByUsernameAndPassword(username, password);
-        if (findUser.id != "")
-        {
-			std::cout << "You have successfully logged in!" << std::endl;
-			std::cout << "Welcome, " << findUser.first_name << " " << findUser.last_name << "!" << std::endl;
-			std::cout << "To add a meal press 1" << std::endl;
-			std::cout << "To see your meals press 2" << std::endl;
-			std::cout << "To add a workout press 3" << std::endl;
-			std::cout << "To exit press E" << std::endl;
-
-			char input;
-			while (true) 
+		bool wrongInput = false;
+		std::cin.ignore();
+		while (true)
+		{
+			pl::printLoginTitle();
+			
+			if (wrongInput)
 			{
-				input = std::cin.get(); // Read a single character
-
-				if (input == '1')
-				{
-					addMealForUser(findUser);
-				}
-				else if (input == '2')
-				{
-					//getMealsForUser(findUser);
-				}
-				else if (input == '3')
-				{
-					addWorkoutForUser(findUser);
-				}
-
-				if (input == 'E' || input == 'e') 
-				{
-					break;
-				}
+				tools::colorRed();
+				std::cout << "\t\t\t\t\tInvalid username or password! Try Again!";
+				tools::resetColor();
+			}
+			
+			std::cout << "\n\t\t\t\t\tEnter your username: ";
+			std::getline(std::cin, username);
+			std::cout << "\t\t\t\t\tEnter your password: ";
+			std::getline(std::cin, password);
+			password = tools::passwordHash(password);
+			User findUser = dal::findUserByUsernameAndPassword(username, password);
+			if (findUser.id != "")
+			{
+				homePanel(findUser);
+			}
+			else
+			{
+				wrongInput = true;
+				tools::clearConsole();
 			}
 		}
-		else
+	}
+
+	void homePanel(User user)
+	{
+		std::cout << "You have successfully logged in!" << std::endl;
+		std::cout << "Welcome, " << user.first_name << " " << user.last_name << "!" << std::endl;
+		std::cout << "To add a meal press 1" << std::endl;
+		std::cout << "To see your meals press 2" << std::endl;
+		std::cout << "To add a workout press 3" << std::endl;
+		std::cout << "To see your workouts press 4" << std::endl;
+		std::cout << "To exit press E" << std::endl;
+
+		char input;
+		while (true)
 		{
-			std::cout << "Invalid username or password!" << std::endl;
+			input = std::cin.get(); // Read a single character
+
+			if (input == '1')
+			{
+				addMealForUser(user);
+			}
+			else if (input == '2')
+			{
+				getAllMealsForUser(user.id);
+			}
+			else if (input == '3')
+			{
+				addWorkoutForUser(user);
+			}
+			else if (input == '4')
+			{
+				getAllWorkoutsForUser(user.id);
+			}
+
+			if (input == 'E' || input == 'e')
+			{
+				break;
+			}
 		}
 	}
 
@@ -272,7 +297,7 @@ namespace bll
 		std::cin >> meal.fat;
 		std::cout << "Enter the carbohydrates content of the meal: ";
 		std::cin >> meal.carbohydrates;
-		meal.created_on = tools::getDatetime();
+		meal.created_on = tools::getDatetime("%d.%m.%Y %T");
 		dal::writeDataToMealsFile(meal);
 	}
 
@@ -285,14 +310,107 @@ namespace bll
 		std::getline(std::cin, workout.name);
 		std::cout << "Enter the calories burned during the workout: ";
 		std::cin >> workout.calories_burned;
-		workout.created_on = tools::getDatetime();
+		workout.created_on = tools::getDatetime("%d.%m.%Y %T");
 		dal::writeDataToWorkoutsFile(workout);
 	}
 
-	//void getMealsForUser(User user)
-	//{
+	void getMealForUser(std::string userId, std::string mealId)
+	{
+		Meal meal = dal::getMealById(mealId);
+		if (meal.created_by == userId)
+		{
+			std::cout << "Name: " << meal.name << std::endl;
+			std::cout << "Calories: " << meal.calories << std::endl;
+			std::cout << "Protein: " << meal.protein << std::endl;
+			std::cout << "Fat: " << meal.fat << std::endl;
+			std::cout << "Carbohydrates: " << meal.carbohydrates << std::endl;
+		}
+	}
 
-	//}
+	void getAllMealsForUser(std::string userId, int cellWidth)
+	{
+		std::vector<Meal> meals = dal::getMealsByUserId(userId);
+
+		std::cout << std::string(cellWidth * 6, '-') << "\n";
+		std::cout << "Name" << std::string(cellWidth - 4, ' ')
+			<< "Calories" << std::string(cellWidth - 8, ' ')
+			<< "Protein" << std::string(cellWidth - 7, ' ')
+			<< "Fat" << std::string(cellWidth - 3, ' ')
+			<< "Carbohydrates" << std::string(cellWidth - 13, ' ')
+			<< "Created On" << std::string(cellWidth - 10, ' ') << "\n";
+		std::cout << std::string(cellWidth * 6, '-') << "\n";
+
+		for (Meal meal : meals)
+		{
+			std::cout << meal.name;
+			int spaces = cellWidth - meal.name.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << meal.calories;
+			spaces = cellWidth - meal.calories.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << meal.protein;
+			spaces = cellWidth - meal.protein.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << meal.fat;
+			spaces = cellWidth - meal.fat.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << meal.carbohydrates;
+			spaces = cellWidth - meal.carbohydrates.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << meal.created_on;
+			spaces = cellWidth - meal.created_on.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << '\n';
+		}
+
+		std::cout << std::string(cellWidth * 6, '-') << "\n";
+	}
+
+	void getWorkoutForUser(std::string userId, std::string workoutId)
+	{
+		Workout workout = dal::getWorkoutById(workoutId);
+		if (workout.created_by == userId)
+		{
+			std::cout << "Name: " << workout.name << std::endl;
+			std::cout << "Calories Burned: " << workout.calories_burned << std::endl;
+		}
+	}
+
+	void getAllWorkoutsForUser(std::string userId, int cellWidth)
+	{
+		std::vector<Workout> workouts = dal::getWorkoutsByUserId(userId);
+
+		std::cout << std::string(cellWidth * 3, '-') << "\n";
+		std::cout << "Name" << std::string(cellWidth - 4, ' ')
+			<< "Calories Burned" << std::string(cellWidth - 15, ' ')
+			<< "Created On" << std::string(cellWidth - 10, ' ') << "\n";
+		std::cout << std::string(cellWidth * 3, '-') << "\n";
+
+		for (Workout workout : workouts)
+		{
+			std::cout << workout.name;
+			int spaces = cellWidth - workout.name.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << workout.calories_burned;
+			spaces = cellWidth - workout.calories_burned.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << workout.created_on;
+			spaces = cellWidth - workout.created_on.length();
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+			std::cout << '\n';
+		}
+
+		std::cout << std::string(cellWidth * 3, '-') << "\n";
+	}
 
 	double calculateBMR(User user)
 	{

@@ -38,62 +38,17 @@ namespace tools
         return hashStr;
     }
 
-    std::string getDatetime()
+    std::string getDatetime(const char* format)
     {
-        time_t timestamp;
-        time(&timestamp);
+        // Get the current date
+        time_t t = time(0);
+        tm now;
+        localtime_s(&now, &t);
 
-        char buffer[26];
-        ctime_s(buffer, sizeof(buffer), &timestamp);
+        char date[30];
+        strftime(date, sizeof(date), format, &now);
 
-        // Reformat the date and time
-        std::string formattedDateTime = std::string(buffer);
-        std::string month = formattedDateTime.substr(4, 3);
-
-        if (month == "Jan") {
-            month = "01";
-        }
-        else if (month == "Feb") {
-            month = "02";
-        }
-        else if (month == "Mar") {
-            month = "03";
-        }
-        else if (month == "Apr") {
-            month = "04";
-        }
-        else if (month == "May") {
-            month = "05";
-        }
-        else if (month == "Jun") {
-            month = "06";
-        }
-        else if (month == "Jul") {
-            month = "07";
-        }
-        else if (month == "Aug") {
-            month = "08";
-        }
-        else if (month == "Sep") {
-            month = "09";
-        }
-        else if (month == "Oct") {
-            month = "10";
-        }
-        else if (month == "Nov") {
-            month = "11";
-        }
-        else if (month == "Dec") {
-            month = "12";
-        }
-
-        std::string day = formattedDateTime.substr(8, 2);
-        std::string year = formattedDateTime.substr(20, 4);
-        std::string time = formattedDateTime.substr(11, 8);
-
-        std::string formattedBuffer = month + "." + day + "." + year + " " + time;
-
-        return formattedBuffer;
+		return date;
     }
 
     std::string generateGUID()
@@ -129,5 +84,74 @@ namespace tools
         }
 
         return guid;
+    }
+
+
+    void clearConsole()
+    {
+        std::cout << "\033c"; // ANSI escape code to clear screen and reset cursor
+    }
+
+    void colorCyan()
+    {
+        std::cout << "\033[1;36m";
+    }
+
+    void colorBlue()
+    {
+        std::cout << "\033[1;34m";
+    }
+
+    void colorYellow()
+    {
+        std::cout << "\033[1;33m";
+    }
+
+    void colorGreen()
+    {
+        std::cout << "\033[1;32m";
+    }
+
+    void colorRed()
+    {
+        std::cout << "\033[1;31m";
+    }
+
+    void resetColor()
+    {
+        std::cout << "\033[0m";
+    }
+
+	void setConsoleSize()
+	{
+        // Set the terminal window size to width and height
+        std::cout << "\033[8;40;140t";
+	}
+
+    void hideCursor()
+    {
+        std::cout << "\033[?25l"; // ANSI code to hide the cursor
+    }
+
+    void showCursor()
+    {
+        std::cout << "\033[?25h"; // ANSI code to show the cursor
+    }
+
+    // Function to move the cursor to a specific position
+    void clearLine()
+    {
+        std::cout << "\033[F";
+    }
+
+    char getInput() 
+    {
+        char ch;
+
+        // Hide cursor
+        hideCursor();
+
+        std::cin >> ch; // Get a single character
+        return ch;
     }
 }

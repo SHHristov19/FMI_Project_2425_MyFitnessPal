@@ -32,10 +32,10 @@ struct Meal
 {
     std::string id;
     std::string name;
-    unsigned int calories; // in kcal
-	unsigned int protein; // in grams
-	unsigned int fat; // in grams
-	unsigned int carbohydrates; // in grams
+    std::string calories; // in kcal
+	std::string protein; // in grams
+	std::string fat; // in grams
+	std::string carbohydrates; // in grams
     std::string created_by; // foreign key to Users
     std::string created_on;
 };
@@ -44,7 +44,7 @@ struct Workout
 {
     std::string id;
     std::string name;
-    unsigned int calories_burned; // in kcal
+    std::string calories_burned; // in kcal
     std::string created_by; // foreign key to Users
     std::string created_on;
 };

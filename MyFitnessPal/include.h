@@ -12,8 +12,13 @@
 namespace pl
 {
 	void printTitle();
-	void clearConsole();
 	void printAsciiDate();
+	void printMenuOptions();
+	void printLoginTitle();
+	void printSignUpTitle();
+	void printWorkoutsTitle();
+	void printMealsTitle(); 
+	void printCRUDMenuOptions();
 }
 
 namespace bll
@@ -32,6 +37,12 @@ namespace bll
 
 	void addMealForUser(User user);
 	void addWorkoutForUser(User user);
+
+	void getAllMealsForUser(std::string userId, int cellWidth = 20);
+	void getMealForUser(std::string userId, std::string mealId);
+
+	void getWorkoutForUser(std::string userId, std::string workoutId);
+	void getAllWorkoutsForUser(std::string userId, int cellWidth = 20);
 }
 
 namespace dal
@@ -77,6 +88,19 @@ namespace tools
 {
 	void to_upper(std::string& data);
 	std::string passwordHash(const std::string& password);
-	std::string getDatetime();
+	std::string getDatetime(const char* format);
 	std::string generateGUID();
+
+	void setConsoleSize();
+	void clearConsole();
+	void colorCyan();
+	void colorBlue();
+	void colorYellow();
+	void colorGreen();
+	void colorRed();
+	void resetColor();
+	void hideCursor();
+	void showCursor();
+	void clearLine();
+	char getInput();
 }
