@@ -711,7 +711,7 @@ namespace dal
 		}
 	}
 
-	std::vector<DailySummary> getDailySummaryByUserId(std::string id)
+	std::vector<DailySummary> getDailySummariesByUserId(std::string id)
 	{
 		std::vector<DailySummary> dailySummaries = readDataFromDailySummariesFile(), result;
 

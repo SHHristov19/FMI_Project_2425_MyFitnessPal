@@ -54,13 +54,13 @@ struct DailySummary
     std::string id;
     std::string user_id; // foreign key to Users
     std::string date; // represents the day
-    unsigned int calories_consumed; // in kcal
-    unsigned int calories_burned; // in kcal
-    unsigned int recommended_calories; // in kcal
-    unsigned int calorie_balance; // (calories_consumed - calories_burned)
-	unsigned int protein; // in grams
-	unsigned int fat; // in grams
-	unsigned int carbohydrates; // in grams
+    std::string calories_consumed; // in kcal
+    std::string calories_burned; // in kcal
+    std::string recommended_calories; // in kcal
+    std::string calorie_balance; // (calories_consumed - calories_burned)
+	std::string protein; // in grams
+	std::string fat; // in grams
+	std::string carbohydrates; // in grams
 	std::string created_on;
 };
 
@@ -68,8 +68,8 @@ struct MacronutrientRatio
 {
     std::string id;
     std::string goal_id; // foreign key to Goals
-    float protein_ratio; // as percentage (0-100)
-    float fat_ratio; // as percentage (0-100)
-    float carbohydrate_ratio; // as percentage (0-100)
+    std::string protein_ratio; // as percentage (0-100)
+    std::string fat_ratio; // as percentage (0-100)
+    std::string carbohydrate_ratio; // as percentage (0-100)
 	std::string created_on;
 };

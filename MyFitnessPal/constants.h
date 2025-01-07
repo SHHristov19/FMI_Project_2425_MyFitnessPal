@@ -66,8 +66,8 @@ const std::string USERS_FILE_NAME = "data/users.csv";
 const std::string GOALS_FILE_NAME = "data/goals.csv";
 const std::string MEALS_FILE_NAME = "data/meals.csv";
 const std::string WORKOUTS_FILE_NAME = "data/workouts.csv";
-const std::string DAILY_SUMMARIES_FILE_NAME = "data/daily_summaries.csv";
-const std::string MACRONUTRIENT_RATIO_FILE_NAME = "data/macronutrient_ratios.csv";
+const std::string DAILY_SUMMARIES_FILE_NAME = "data/dailySummaries.csv";
+const std::string MACRONUTRIENT_RATIO_FILE_NAME = "data/macronutrientRatios.csv";
 
 // File Headers
 const std::string USERS_FILE_HEADER = "id,first_name,last_name,age,gender,height,weight,activity_level,goal_id,username,password,type,created_on";
@@ -179,3 +179,5 @@ const std::string ASCII_SEPARATOR[6] = {
 };
 
 const std::string TABULATION = "\t\t\t\t\t";
+
+const int NUMBER_DIGITS = 10;

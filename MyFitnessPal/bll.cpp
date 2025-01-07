@@ -5,12 +5,16 @@ namespace bll
 	void signUp()
 	{
 		User user;
-		user.id = tools::generateGUID();
 		ActivityLevel activityLevel;
 		Goal goal;
 		GoalType goalType;
+		DailySummary dailySummary;
+		user.id = tools::generateGUID();
 		goal.id = tools::generateGUID();
+		dailySummary.id = tools::generateGUID();
+		dailySummary.user_id = user.id;
 		user.goal_id = goal.id;
+
 		pl::printSignUpTitle();
 		std::cin.ignore();
 		std::cout << TABULATION << "Enter your first name: ";
@@ -84,6 +88,12 @@ namespace bll
 				goal.calorie_adjustment = DAILY_DEFICIT_OR_SURPLUS_100KG;
 			}
 		}
+		else
+		{
+			goal.weekly_change = 0;
+			goal.calorie_adjustment = 0;
+		}
+
 		std::cout << TABULATION << "Enter your type [Standard/Premium]: ";
 		user.type = enterValidType(USER_ACCOUNT_TYPE, 2, "Invalid input. Please enter a valid type [Standard/Premium]: ");
 
@@ -95,10 +105,16 @@ namespace bll
 
 		user.password = tools::passwordHash(user.password);
 		user.created_on = tools::getDatetime("%d.%m.%Y %T");
+
+		dailySummary.recommended_calories = calculateGoalCalories(user, goal.type, goal.calorie_adjustment);
+	    dailySummary.date = tools::getDatetime("%d.%m.%Y");
+		dailySummary.created_on = tools::getDatetime("%d.%m.%Y %T");
+
 		dal::writeDataToGoalsFile(goal);
 		dal::writeDataToUsersFile(user);
+		dal::writeDataToDailySummariesFile(dailySummary);
 
-		homePanel(user);
+		mainPanel();
 	}
 
 	void signIn()
@@ -106,12 +122,12 @@ namespace bll
 		std::string username;
 		std::string password;
 		bool wrongInput = false;
-		
+		std::cin.ignore();
+
 		while (true)
 		{
 			pl::printLoginTitle();
-			std::cin.ignore();
-
+			
 			if (wrongInput)
 			{
 				tools::colorRed();
@@ -169,9 +185,38 @@ namespace bll
 	void homePanel(User user)
 	{
 		tools::clearConsole();
-		std::cout << "You have successfully logged in!" << std::endl;
-		std::cout << "Welcome, " << user.first_name << " " << user.last_name << "!" << std::endl;
+
+		tools::colorGreen();
+		std::cout << TABULATION + TABULATION.substr(3) << "You have successfully logged in!" << std::endl;
+		std::cout << TABULATION + TABULATION.substr(3) << "Welcome, " << user.first_name << " " << user.last_name << "!" << std::endl;
+		tools::resetColor();
+
 		pl::printAsciiDate();
+	
+		
+		DailySummary dailySummary;
+		std::vector<DailySummary> summaries = dal::getDailySummariesByUserId(user.id);
+		for (const DailySummary& summary : summaries)
+		{
+			if (summary.date == tools::getDatetime("%d.%m.%Y"))
+			{
+				dailySummary = summary;
+				break;
+			}
+		}
+		if (dailySummary.id != "")
+		{
+			tools::colorCyan();
+			std::cout << "\n\n";
+			std::cout << TABULATION << "Calories Consumed: " << dailySummary.calories_consumed << ((user.type == "Premium") ? (TABULATION + "Protein: " + dailySummary.protein + "\n") : "\n");
+			std::cout << TABULATION << "Calories Burned: " << dailySummary.calories_burned << ((user.type == "Premium") ? (TABULATION + "Fat: " + dailySummary.fat + "\n") : "\n");
+			std::cout << TABULATION << "Recommended Calories: " << dailySummary.recommended_calories << ((user.type == "Premium") ? (TABULATION.substr(1) + "Carbohydrates: " + dailySummary.carbohydrates + "\n") : "\n");
+			std::cout << TABULATION << "Calorie Balance: " << dailySummary.calorie_balance << "\n\n";
+
+			tools::resetColor();
+		}
+		
+
 		std::cout << "To add a meal press 1" << std::endl;
 		std::cout << "To see your meals press 2" << std::endl;
 		std::cout << "To add a workout press 3" << std::endl;
@@ -385,36 +430,44 @@ namespace bll
 	void getAllMealsForUser(std::string userId, int cellWidth)
 	{
 		std::vector<Meal> meals = dal::getMealsByUserId(userId);
+		size_t id = 1;
 
-		std::cout << std::string(cellWidth * 6, '-') << "\n";
-		std::cout << "Name" << std::string(cellWidth - 4, ' ')
+		std::cout << std::string(cellWidth * 7 - NUMBER_DIGITS, '-') << "\n";
+
+		std::cout << "Id" << std::string(cellWidth - 2 - NUMBER_DIGITS, ' ')
+			<< "Name" << std::string(cellWidth - 4, ' ')
 			<< "Calories" << std::string(cellWidth - 8, ' ')
 			<< "Protein" << std::string(cellWidth - 7, ' ')
 			<< "Fat" << std::string(cellWidth - 3, ' ')
 			<< "Carbohydrates" << std::string(cellWidth - 13, ' ')
 			<< "Created On" << std::string(cellWidth - 10, ' ') << "\n";
-		std::cout << std::string(cellWidth * 6, '-') << "\n";
+
+		std::cout << std::string(cellWidth * 7 - NUMBER_DIGITS, '-') << "\n";
 
 		for (Meal meal : meals)
 		{
+			std::cout << id++;
+			int spaces = cellWidth - std::to_string(id).length() - NUMBER_DIGITS;
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
 			std::cout << meal.name;
-			int spaces = cellWidth - meal.name.length();
+			spaces = cellWidth - meal.name.length();
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-			std::cout << meal.calories;
-			spaces = cellWidth - meal.calories.length();
+			std::cout << meal.calories << " kcal";
+			spaces = cellWidth - meal.calories.length() - 5;
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-			std::cout << meal.protein;
-			spaces = cellWidth - meal.protein.length();
+			std::cout << meal.protein << "g.";
+			spaces = cellWidth - meal.protein.length() - 2;
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-			std::cout << meal.fat;
-			spaces = cellWidth - meal.fat.length();
+			std::cout << meal.fat << "g.";
+			spaces = cellWidth - meal.fat.length() - 2;
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-			std::cout << meal.carbohydrates;
-			spaces = cellWidth - meal.carbohydrates.length();
+			std::cout << meal.carbohydrates << "g.";
+			spaces = cellWidth - meal.carbohydrates.length() - 2;
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
 			std::cout << meal.created_on;
@@ -424,7 +477,7 @@ namespace bll
 			std::cout << '\n';
 		}
 
-		std::cout << std::string(cellWidth * 6, '-') << "\n";
+		std::cout << std::string(cellWidth * 7 - NUMBER_DIGITS, '-') << "\n";
 	}
 
 	void getWorkoutForUser(std::string userId, std::string workoutId)
@@ -440,17 +493,25 @@ namespace bll
 	void getAllWorkoutsForUser(std::string userId, int cellWidth)
 	{
 		std::vector<Workout> workouts = dal::getWorkoutsByUserId(userId);
+		size_t id = 1;
 
-		std::cout << std::string(cellWidth * 3, '-') << "\n";
-		std::cout << "Name" << std::string(cellWidth - 4, ' ')
+		std::cout << std::string(cellWidth * 4 - NUMBER_DIGITS, '-') << "\n";
+
+		std::cout << "Id" << std::string(cellWidth - 2 - NUMBER_DIGITS, ' ')
+			<< "Name" << std::string(cellWidth - 4, ' ')
 			<< "Calories Burned" << std::string(cellWidth - 15, ' ')
 			<< "Created On" << std::string(cellWidth - 10, ' ') << "\n";
-		std::cout << std::string(cellWidth * 3, '-') << "\n";
+
+		std::cout << std::string(cellWidth * 4 - NUMBER_DIGITS, '-') << "\n";
 
 		for (Workout workout : workouts)
 		{
+			std::cout << id++;
+			int spaces = cellWidth - std::to_string(id).length() - NUMBER_DIGITS;
+			for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
 			std::cout << workout.name;
-			int spaces = cellWidth - workout.name.length();
+			spaces = cellWidth - workout.name.length();
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
 			std::cout << workout.calories_burned;
@@ -464,7 +525,7 @@ namespace bll
 			std::cout << '\n';
 		}
 
-		std::cout << std::string(cellWidth * 3, '-') << "\n";
+		std::cout << std::string(cellWidth * 4 - NUMBER_DIGITS, '-') << "\n";
 	}
 
 	double calculateBMR(User user)
@@ -503,22 +564,22 @@ namespace bll
 		return bmr;
 	}
 
-	double calculateGoalCalories(User user)
+	double calculateGoalCalories(User user, char goalType, unsigned int calorieAdjustment)
 	{
 		Goal goal = dal::getGoalById(user.goal_id);
 		double bmr = calculateBMR(user);
 		double goalCalories = 0;
-		if (goal.type == '1')
+		if (goalType == '1')
 		{
-			goalCalories = bmr - goal.calorie_adjustment;
+			goalCalories = bmr - calorieAdjustment;
 		}
-		else if (goal.type == '2')
+		else if (goalType == '2')
 		{
 			goalCalories = bmr;
 		}
-		else if (goal.type == '3')
+		else if (goalType == '3')
 		{
-			goalCalories = bmr + goal.calorie_adjustment;
+			goalCalories = bmr + calorieAdjustment;
 		}
 
 		return goalCalories;

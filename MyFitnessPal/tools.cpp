@@ -6,7 +6,8 @@ namespace tools
     {
         for (char& c : data)
         {
-            if (c >= 'a' && c <= 'z') {
+            if (c >= 'a' && c <= 'z') 
+            {
                 c -= ('a' - 'A'); // Convert lowercase to uppercase
             }
         }

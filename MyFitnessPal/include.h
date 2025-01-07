@@ -46,6 +46,9 @@ namespace bll
 
 	void getWorkoutForUser(std::string userId, std::string workoutId);
 	void getAllWorkoutsForUser(std::string userId, int cellWidth = 20);
+
+	double calculateBMR(User user);
+	double calculateGoalCalories(User user, char goalType, unsigned int calorieAdjustment);
 }
 
 namespace dal
