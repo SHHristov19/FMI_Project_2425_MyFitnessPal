@@ -2,90 +2,58 @@
 
 namespace dal
 {
+	void readProperty(const std::string& line, size_t& start, size_t& end, std::string& field) 
+	{
+		end = line.find(',', start);
+		field = (end == std::string::npos) ? line.substr(start) : line.substr(start, end - start);
+		start = (end == std::string::npos) ? std::string::npos : end + 1;
+	}
+
 #pragma region Users
 
-    std::vector<User> readDataFromUsersFile()
-    {
-        std::vector<User> allData;
-        std::ifstream file(USERS_FILE_NAME);
-        std::string line;
-        int counter = -1;
-        if (file.is_open())
-        {
-            while (std::getline(file, line))
-            {
-                if (counter > -1)
-                {
-                    counter = 0;
-                    User data;
-                    for (size_t i = 0; i < line.size(); i++)
-                    {
-                        if (line[i] == ',' && counter < 12)
-                        {
-                            counter++;
-                            line.erase(i, 0);
-                        }
-						else if (counter == 0)
-						{
-							data.id += line[i];
-						}
-                        else if (counter == 1)
-                        {
-							data.first_name += line[i];
-						}
-						else if (counter == 2)
-						{
-							data.last_name += line[i];
-						}
-                        else if (counter == 3)
-                        {
-							data.age += line[i];
-                        }
-                        else if (counter == 4)
-                        {
-							data.gender += line[i];
-                        }
-						else if (counter == 5)
-						{
-							data.height += line[i];
-                        }
-						else if (counter == 6)
-						{
-							data.weight += line[i];
-						}
-						else if (counter == 7)
-						{
-							data.activity_level += line[i];
-						}
-						else if (counter == 8)
-						{
-							data.goal_id += line[i];
-						}
-						else if (counter == 9)
-						{
-							data.username += line[i];
-						}
-						else if (counter == 10)
-						{
-							data.password += line[i];
-						}
-						else if (counter == 11)
-						{
-							data.type += line[i];
-						}
-						else if (counter == 12)
-						{
-							data.created_on += line[i];
-						}
-                    } 
-					allData.push_back(data);
-                }
-                counter++;
-            }
-            file.close();
-        }
-        return allData;
-    }
+	std::vector<User> readDataFromUsersFile()
+	{
+		std::vector<User> users;
+		std::ifstream file(USERS_FILE_NAME);
+
+		if (!file.is_open())
+		{
+			std::cerr << "Error: Could not open file " << USERS_FILE_NAME << std::endl;
+			return users;
+		}
+
+		std::string line;
+		// Skip the header line 
+		std::getline(file, line);
+
+		while (std::getline(file, line))
+		{
+			size_t start = 0;
+			size_t end = 0;
+			User user;
+
+			// Parse each field separated by a comma
+			readProperty(line, start, end, user.id);
+			readProperty(line, start, end, user.first_name);
+			readProperty(line, start, end, user.last_name);
+			readProperty(line, start, end, user.age);
+			readProperty(line, start, end, user.gender);
+			readProperty(line, start, end, user.height);
+			readProperty(line, start, end, user.weight);
+			readProperty(line, start, end, user.activity_level);
+			readProperty(line, start, end, user.goal_id);
+			readProperty(line, start, end, user.username);
+			readProperty(line, start, end, user.password);
+			readProperty(line, start, end, user.type);
+			readProperty(line, start, end, user.created_on);
+
+			// Add the user to the vector
+			users.push_back(user);
+		}
+
+		file.close();
+		return users;
+	}
 
 	void writeDataToUsersFile(User user)
 	{
@@ -193,49 +161,38 @@ namespace dal
 
 	std::vector<Goal> readDataFromGoalsFile()
 	{
-		std::vector<Goal> allData;
+		std::vector<Goal> goals;
 		std::ifstream file(GOALS_FILE_NAME);
-		std::string line;
-		int counter = -1;
-		if (file.is_open())
+
+		if (!file.is_open())
 		{
-			while (std::getline(file, line))
-			{
-				if (counter > -1)
-				{
-					counter = 0;
-					Goal data;
-					for (size_t i = 0; i < line.size(); i++)
-					{
-						if (line[i] == ',' && counter < 3)
-						{
-							counter++;
-							line.erase(i, 0);
-						}
-						else if (counter == 0)
-						{
-							data.id += line[i];
-						}
-						else if (counter == 1)
-						{
-							data.type += line[i];
-						}
-						else if (counter == 2)
-						{
-							data.weekly_change += line[i];
-						}
-						else if (counter == 3)
-						{
-							data.calorie_adjustment += line[i];
-						}
-					}
-					allData.push_back(data);
-				}
-				counter++;
-			}
-			file.close();
+			std::cerr << "Error: Could not open file " << GOALS_FILE_NAME << std::endl;
+			return goals;
 		}
-		return allData;
+
+		std::string line;
+		// Skip the header line 
+		std::getline(file, line);
+
+		while (std::getline(file, line))
+		{
+			size_t start = 0;
+			size_t end = 0;
+			Goal goal;
+
+			// Parse each field separated by a comma
+			readProperty(line, start, end, goal.id);
+			readProperty(line, start, end, goal.type);
+			readProperty(line, start, end, goal.weekly_change);
+			readProperty(line, start, end, goal.calorie_adjustment);
+
+			// Add the goal to the vector
+			goals.push_back(goal);
+		}
+
+
+		file.close();
+		return goals;
 	}
 
 	void writeDataToGoalsFile(Goal goal)
@@ -257,12 +214,11 @@ namespace dal
 	}
 
 	Goal getGoalById(std::string id)
-	{
-		User user = getUserById(id);
+	{ 
 		std::vector<Goal> goals = readDataFromGoalsFile();
 		for (Goal goal : goals)
 		{
-			if (goal.id == user.goal_id)
+			if (goal.id == id)
 			{
 				return goal;
 			}
@@ -323,65 +279,41 @@ namespace dal
 
 	std::vector<Meal> readDataFromMealsFile()
 	{
-		std::vector<Meal> allData;
+		std::vector<Meal> meals;
 		std::ifstream file(MEALS_FILE_NAME);
-		std::string line;
-		int counter = -1;
-		if (file.is_open())
+
+		if (!file.is_open())
 		{
-			while (std::getline(file, line))
-			{
-				if (counter > -1)
-				{
-					counter = 0;
-					Meal data;
-					for (size_t i = 0; i < line.size(); i++)
-					{
-						if (line[i] == ',' && counter < 7)
-						{
-							counter++;
-							line.erase(i, 0);
-						}
-						else if (counter == 0)
-						{
-							data.id += line[i];
-						}
-						else if (counter == 1)
-						{
-							data.name += line[i];
-						}
-						else if (counter == 2)
-						{
-							data.calories += line[i];
-						}
-						else if (counter == 3)
-						{
-							data.protein += line[i];
-						}
-						else if (counter == 4)
-						{
-							data.fat += line[i];
-						}
-						else if (counter == 5)
-						{
-							data.carbohydrates += line[i];
-						}
-						else if (counter == 6)
-						{
-							data.created_by += line[i];
-						}
-						else if (counter == 7)
-						{
-							data.created_on += line[i];
-						}
-					}
-					allData.push_back(data);
-				}
-				counter++;
-			}
-			file.close();
+			std::cerr << "Error: Could not open file " << MEALS_FILE_NAME << std::endl;
+			return meals;
 		}
-		return allData;
+
+		std::string line;
+		// Skip the header line 
+		std::getline(file, line);
+
+		while (std::getline(file, line))
+		{
+			size_t start = 0;
+			size_t end = 0;
+			Meal meal;
+
+			// Parse each field separated by a comma
+			readProperty(line, start, end, meal.id);
+			readProperty(line, start, end, meal.name);
+			readProperty(line, start, end, meal.calories);
+			readProperty(line, start, end, meal.protein);
+			readProperty(line, start, end, meal.fat);
+			readProperty(line, start, end, meal.carbohydrates);
+			readProperty(line, start, end, meal.created_by);
+			readProperty(line, start, end, meal.created_on);
+
+			// Add the meal to the vector
+			meals.push_back(meal);
+		}
+
+		file.close();
+		return meals;
 	}
 
 	void writeDataToMealsFile(Meal meal)
@@ -479,53 +411,38 @@ namespace dal
 
 	std::vector<Workout> readDataFromWorkoutsFile()
 	{
-		std::vector<Workout> allData;
+		std::vector<Workout> workouts;
 		std::ifstream file(WORKOUTS_FILE_NAME);
-		std::string line;
-		int counter = -1;
-		if (file.is_open())
+
+		if (!file.is_open())
 		{
-			while (std::getline(file, line))
-			{
-				if (counter > -1)
-				{
-					counter = 0;
-					Workout data;
-					for (size_t i = 0; i < line.size(); i++)
-					{
-						if (line[i] == ',' && counter < 4)
-						{
-							counter++;
-							line.erase(i, 0);
-						}
-						else if (counter == 0)
-						{
-							data.id += line[i];
-						}
-						else if (counter == 1)
-						{
-							data.name += line[i];
-						}
-						else if (counter == 2)
-						{
-							data.calories_burned += line[i];
-						}
-						else if (counter == 3)
-						{
-							data.created_by += line[i];
-						}
-						else if (counter == 4)
-						{
-							data.created_on += line[i];
-						}
-					}
-					allData.push_back(data);
-				}
-				counter++;
-			}
-			file.close();
+			std::cerr << "Error: Could not open file " << WORKOUTS_FILE_NAME << std::endl;
+			return workouts;
 		}
-		return allData;
+
+		std::string line;
+		// Skip the header line 
+		std::getline(file, line);
+
+		while (std::getline(file, line))
+		{
+			size_t start = 0;
+			size_t end = 0;
+			Workout workout;
+
+			// Parse each field separated by a comma
+			readProperty(line, start, end, workout.id);
+			readProperty(line, start, end, workout.name);
+			readProperty(line, start, end, workout.calories_burned);
+			readProperty(line, start, end, workout.created_by);
+			readProperty(line, start, end, workout.created_on);
+
+			// Add the workout to the vector
+			workouts.push_back(workout);
+		}
+
+		file.close();
+		return workouts;
 	}
 
 	void writeDataToWorkoutsFile(Workout workout)
@@ -613,77 +530,44 @@ namespace dal
 
 	std::vector<DailySummary> readDataFromDailySummariesFile()
 	{
-		std::vector<DailySummary> allData;
+		std::vector<DailySummary> dailySummaries;
 		std::ifstream file(DAILY_SUMMARIES_FILE_NAME);
-		std::string line;
-		int counter = -1;
-		if (file.is_open())
+
+		if (!file.is_open())
 		{
-			while (std::getline(file, line))
-			{
-				if (counter > -1)
-				{
-					counter = 0;
-					DailySummary data;
-					for (size_t i = 0; i < line.size(); i++)
-					{
-						if (line[i] == ',' && counter < 10)
-						{
-							counter++;
-							line.erase(i, 0);
-						}
-						else if (counter == 0)
-						{
-							data.id += line[i];
-						}
-						else if (counter == 1)
-						{
-							data.user_id += line[i];
-						}
-						else if (counter == 2)
-						{
-							data.date += line[i];
-						}
-						else if (counter == 3)
-						{
-							data.calories_consumed += line[i];
-						}
-						else if (counter == 4)
-						{
-							data.calories_burned += line[i];
-						}
-						else if (counter == 5)
-						{
-							data.recommended_calories += line[i];
-						}
-						else if (counter == 6)
-						{
-							data.calorie_balance += line[i];
-						}
-						else if (counter == 7)
-						{
-							data.protein += line[i];
-						}
-						else if (counter == 8)
-						{
-							data.fat += line[i];
-						}
-						else if (counter == 9)
-						{
-							data.carbohydrates += line[i];
-						}
-						else if (counter == 10)
-						{
-							data.created_on += line[i];
-						}
-					}
-					allData.push_back(data);
-				}
-				counter++;
-			}
-			file.close();
+			std::cerr << "Error: Could not open file " << DAILY_SUMMARIES_FILE_NAME << std::endl;
+			return dailySummaries;
 		}
-		return allData;
+
+		std::string line;
+		// Skip the header line 
+		std::getline(file, line);
+
+		while (std::getline(file, line))
+		{
+			size_t start = 0;
+			size_t end = 0;
+			DailySummary dailySummary;
+
+			// Parse each field separated by a comma
+			readProperty(line, start, end, dailySummary.id);
+			readProperty(line, start, end, dailySummary.user_id);
+			readProperty(line, start, end, dailySummary.date);
+			readProperty(line, start, end, dailySummary.calories_consumed);
+			readProperty(line, start, end, dailySummary.calories_burned);
+			readProperty(line, start, end, dailySummary.recommended_calories);
+			readProperty(line, start, end, dailySummary.calorie_balance);
+			readProperty(line, start, end, dailySummary.protein);
+			readProperty(line, start, end, dailySummary.fat);
+			readProperty(line, start, end, dailySummary.carbohydrates);
+			readProperty(line, start, end, dailySummary.created_on);
+
+			// Add the daily summary to the vector
+			dailySummaries.push_back(dailySummary);
+		}
+
+		file.close();
+		return dailySummaries;
 	}
 
 	void writeDataToDailySummariesFile(DailySummary dailySummary)
@@ -724,6 +608,19 @@ namespace dal
 		}
 
 		return result;
+	}
+
+	DailySummary getDailySummaryByUserUdToday(std::string id)
+	{
+		std::vector<DailySummary> dailySummaries = readDataFromDailySummariesFile();
+
+		for (DailySummary dailySummary : dailySummaries)
+		{
+			if (dailySummary.user_id == id && dailySummary.date == tools::getDatetime("%d.%m.%Y"))
+			{
+				return dailySummary;
+			}
+		}
 	}
 
 	void updateOrDeleteDailySummary(DailySummary dailySummary, bool isUpdate)
@@ -777,45 +674,36 @@ namespace dal
 
 	std::vector<MacronutrientRatio> readDataFromMacronutrientRatiosFile()
 	{
-		std::vector<MacronutrientRatio> allData;
+		std::vector<MacronutrientRatio> macronutrientRatios;
 		std::ifstream file(MACRONUTRIENT_RATIO_FILE_NAME);
-		std::string line;
-		int counter = -1;
-		if (file.is_open())
+
+		if (!file.is_open())
 		{
-			while (std::getline(file, line))
-			{
-				if (counter > -1)
-				{
-					counter = 0;
-					MacronutrientRatio data;
-					for (size_t i = 0; i < line.size(); i++)
-					{
-						if (line[i] == ',' && counter < 2)
-						{
-							counter++;
-							line.erase(i, 0);
-						}
-						else if (counter == 0)
-						{
-							data.id += line[i];
-						}
-						else if (counter == 1)
-						{
-							data.goal_id += line[i];
-						}
-						else if (counter == 2)
-						{
-							data.protein_ratio += line[i];
-						}
-					}
-					allData.push_back(data);
-				}
-				counter++;
-			}
-			file.close();
+			std::cerr << "Error: Could not open file " << MACRONUTRIENT_RATIO_FILE_NAME << std::endl;
+			return macronutrientRatios;
 		}
-		return allData;
+
+		std::string line;
+		// Skip the header line 
+		std::getline(file, line);
+
+		while (std::getline(file, line))
+		{
+			size_t start = 0;
+			size_t end = 0;
+			MacronutrientRatio macronutrientRatio;
+
+			// Parse each field separated by a comma
+			readProperty(line, start, end, macronutrientRatio.id);
+			readProperty(line, start, end, macronutrientRatio.goal_id);
+			readProperty(line, start, end, macronutrientRatio.protein_ratio);
+
+			// Add the macronutrient ratio to the vector
+			macronutrientRatios.push_back(macronutrientRatio);
+		}
+
+		file.close();
+		return macronutrientRatios;
 	}
 
 	void writeDataToMacronutrientRatioFile(MacronutrientRatio macronutrientRatio)

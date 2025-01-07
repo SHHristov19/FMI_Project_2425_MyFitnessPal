@@ -7,11 +7,11 @@ struct User
     std::string id;
     std::string first_name;
     std::string last_name;
-    unsigned int age;
-    char gender;
-    float height; // in cm
-    float weight; // in kg
-	char activity_level; // e.g., 1-5 scale from ActivityLevel struct
+    std::string age;
+    std::string gender;
+    std::string height; // in cm
+    std::string weight; // in kg
+    std::string activity_level; // e.g., 1-5 scale from ActivityLevel struct
     std::string goal_id; // foreign key to Goals
     std::string username;
     std::string password;
@@ -23,9 +23,9 @@ struct User
 struct Goal
 {
     std::string id;
-    char type;
-	float weekly_change; // e.g., in kg per week = 0.25, 0.50, 0.75, 1.00
-    unsigned int calorie_adjustment; // in kcal
+    std::string type;
+    std::string weekly_change; // e.g., in kg per week = 0.25, 0.50, 0.75, 1.00
+    std::string calorie_adjustment; // in kcal
 };
 
 struct Meal 

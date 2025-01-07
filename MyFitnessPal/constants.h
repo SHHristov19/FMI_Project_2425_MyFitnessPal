@@ -80,7 +80,7 @@ const std::string MACRONUTRIENT_RATIO_FILE_HEADER = "id,goal_id,protein_ratio,fa
 const char GENTER_TYPES[] = { 'M', 'F' };
 const char ACTIVITY_LEVEL_TYPES[] = { '1', '2', '3', '4', '5' };
 const char GOAL_TYPES[] = { '1', '2', '3' };
-const float GOAL_WEEKLY_CHANGES[] = { 0.25, 0.50, 0.75, 1 };
+const std::string GOAL_WEEKLY_CHANGES[] = { "0.25", "0.50", "0.75", "1" };
 const std::string USER_ACCOUNT_TYPE[] = { "Standard", "Premium" };
 
 

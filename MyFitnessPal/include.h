@@ -29,16 +29,19 @@ namespace bll
 	void signIn();
 	void homePanel(User user);
 
+	void printDate(std::string firstName, std::string lastName);
+	void printDailySymmary(User user);
+
 	std::string enterValidPassword(std::string password);
 	std::string validatePassword(std::string password);
 
 
 	char enterValidType(const char types[], size_t typeSize, std::string errorMsg);
-	float enterValidType(const float types[], size_t typeSize, std::string errorMsg);
 	std::string enterValidType(const std::string types[], size_t typeSize, std::string errorMsg);
 
-
+	void updateDailySummaryOnAddingMeal(Meal meal, User user);
 	void addMealForUser(User user);
+	void updateDailySummaryOnAddingWorkout(Workout workout, User user);
 	void addWorkoutForUser(User user);
 
 	void getAllMealsForUser(std::string userId, int cellWidth = 20);
@@ -48,11 +51,15 @@ namespace bll
 	void getAllWorkoutsForUser(std::string userId, int cellWidth = 20);
 
 	double calculateBMR(User user);
-	double calculateGoalCalories(User user, char goalType, unsigned int calorieAdjustment);
+	int calculateGoalCalories(User user, std::string goalType, unsigned calorieAdjustment);
+
+	DailySummary createDailySummary(User user, Goal goal);
 }
 
 namespace dal
 {
+	void readProperty(const std::string& line, size_t& start, size_t& end, std::string& field);
+
 	// Read data from files
 	std::vector<User> readDataFromUsersFile();
 	std::vector<Goal> readDataFromGoalsFile();
@@ -82,12 +89,15 @@ namespace dal
 	Goal getGoalById(std::string id);
 	Meal getMealById(std::string id);
 	Workout getWorkoutById(std::string id);
+	DailySummary getDailySummaryByUserUdToday(std::string id);
 
 	std::vector<Goal> getGoalsByUserId(std::string id);
 	std::vector<Meal> getMealsByUserId(std::string id);
 	std::vector<Workout> getWorkoutsByUserId(std::string id);
 	std::vector<DailySummary> getDailySummariesByUserId(std::string id);
 	std::vector<MacronutrientRatio> getMacronutrientRatioByUserId(std::string id);
+
+	
 }
 
 namespace tools
