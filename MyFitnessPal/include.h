@@ -29,7 +29,8 @@ namespace bll
 	void signIn();
 	void homePanel(User user);
 
-	void printDate(std::string firstName, std::string lastName);
+	void printHelp();
+	void printDateAndWelcome(std::string firstName, std::string lastName);
 	void printDailySymmary(User user);
 
 	std::string enterValidPassword(std::string password);
@@ -43,6 +44,8 @@ namespace bll
 	void addMealForUser(User user);
 	void updateDailySummaryOnAddingWorkout(Workout workout, User user);
 	void addWorkoutForUser(User user);
+
+	void getGoalForUser(std::string goalId, int cellWidth = 20);
 
 	void getAllMealsForUser(std::string userId, int cellWidth = 20);
 	void getMealForUser(std::string userId, std::string mealId);
@@ -118,5 +121,5 @@ namespace tools
 	void hideCursor();
 	void showCursor();
 	void clearLine();
-	char getInput();
+	std::string getInput();
 }

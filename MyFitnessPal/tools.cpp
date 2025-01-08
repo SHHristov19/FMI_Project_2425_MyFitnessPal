@@ -142,17 +142,20 @@ namespace tools
     // Function to move the cursor to a specific position
     void clearLine()
     {
-        std::cout << "\033[F";
-    }
+		std::cout << "\033[A\33[2K\r" << std::flush; // ANSI escape code to move up one line and clear the line
+    } 
 
-    char getInput() 
-    {
-        char ch;
+	std::string getInput()
+	{
+		std::string line;
 
         // Hide cursor
         hideCursor();
 
-        std::cin >> ch; // Get a single character
-        return ch;
-    }
+		
+		std::getline(std::cin, line);
+        
+
+		return line;
+	}
 }

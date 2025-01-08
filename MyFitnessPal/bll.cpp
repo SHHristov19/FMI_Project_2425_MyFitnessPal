@@ -117,7 +117,6 @@ namespace bll
 		std::string username;
 		std::string password;
 		bool wrongInput = false;
-		std::cin.ignore();
 
 		while (true)
 		{
@@ -129,7 +128,7 @@ namespace bll
 				std::cout << TABULATION << "Invalid username or password! Try Again!";
 				tools::resetColor();
 			}
-			
+			 
 			std::cout << std::endl << TABULATION << "Enter your username: ";
 			std::getline(std::cin, username);
 			std::cout << TABULATION << "Enter your password: ";
@@ -157,33 +156,33 @@ namespace bll
 
 		while (true)
 		{
-			char input = tools::getInput();
-			switch (input)
+			std::string input = tools::getInput();
+			tools::clearLine();
+			if (input == "1")
 			{
-			case '1':
 				tools::clearConsole();
 				bll::signIn();
-				break;
-			case '2':
+			}
+			else if (input == "2")
+			{
 				tools::clearConsole();
 				bll::signUp();
-				break;
-			case '3': 
+			}
+			else if (input == "3")
+			{
 				std::exit(0); // Exit the program
-			default:
-				tools::clearLine();
-				break;
 			}
 		}
 	}
 
-	void printDate(std::string firstName, std::string lastName)
+	void printDateAndWelcome(std::string firstName, std::string lastName)
 	{
 		tools::clearConsole();
 
 		tools::colorGreen();
 		std::cout << TABULATION + TABULATION.substr(3) << "You have successfully logged in!" << std::endl;
 		std::cout << TABULATION + TABULATION.substr(3) << "Welcome, " << firstName << " " << lastName << "!" << std::endl;
+		std::cout << TABULATION + TABULATION.substr(3) << "IF YOU NEED HELP PRESS H" << std::endl;
 		tools::resetColor();
 
 		pl::printAsciiDate();
@@ -204,8 +203,7 @@ namespace bll
 			}
 			else
 			{
-				// TO DO createGoal()
-				std::cout << "You have not set a goal yet!" << std::endl;
+				// TO DO createGoal() GO TO DailySummary dailySummary = dal::getDailySummaryByUserUdToday(user.id);
 			}
 		}
 		if (dailySummary.id != "")
@@ -214,60 +212,79 @@ namespace bll
 
 			std::cout << TABULATION << "Calories Consumed: " << dailySummary.calories_consumed
 				<< ((user.type == "Premium") ? (TABULATION + "Protein: " + dailySummary.protein + "\n") : "\n");
+
 			std::cout << TABULATION << "Calories Burned: " << dailySummary.calories_burned
 				<< ((user.type == "Premium") ? (TABULATION + "Fat: " + dailySummary.fat + "\n") : "\n");
+
 			std::cout << TABULATION << "Recommended Calories: " << dailySummary.recommended_calories
 				<< ((user.type == "Premium") ? (TABULATION.substr(1) + "Carbohydrates: " + dailySummary.carbohydrates + "\n") : "\n");
+
 			std::cout << TABULATION << "Calorie Balance: " << dailySummary.calorie_balance << "\n\n";
 
 			tools::resetColor();
 		}
 	}
 
+	void printHelp()
+	{
+		std::cout << "\n" << TABULATION << "\t\t\t" << "To manage your meals press M/m" << std::endl;
+		std::cout << TABULATION << "\t\t\t" << "To manage your workouts press W/w" << std::endl;
+		std::cout << TABULATION << "\t\t\t" << "To manage your goal press G/g" << std::endl;
+		std::cout << TABULATION << "\t\t\t" << "To see the report for the previous day press <" << std::endl;
+		std::cout << TABULATION << "\t\t\t" << "To see the report for the next day press >" << std::endl;
+		std::cout << TABULATION << "\t\t\t" << "To sign out press E/e" << std::endl;
+	}
+
 	void homePanel(User user)
 	{
-		char input;
 		while (true)
 		{
-			printDate(user.first_name, user.last_name);
+			printDateAndWelcome(user.first_name, user.last_name);
 
 			printDailySymmary(user);
 
-			std::cout << "To add a meal press 1" << std::endl;
-			std::cout << "To see your meals press 2" << std::endl;
-			std::cout << "To add a workout press 3" << std::endl;
-			std::cout << "To see your workouts press 4" << std::endl;
-			std::cout << "To exit press E" << std::endl;
+			std::cout << std::endl;
+			getGoalForUser(user.goal_id);
+			getAllMealsForUser(user.id);
+			getAllWorkoutsForUser(user.id);
 
-			input = std::cin.get(); // Read a single character
+			std::string input = tools::getInput();
+			//switch (input)
+			//{
+			//case 'M':
+			//case 'm':
+			//	tools::clearConsole();
+			//	
+			//	break;
+			//case 'W':
+			//case 'w':
+			//	tools::clearConsole();
+			//	
+			//	break;
+			//case 'G':
+			//case 'g':
+			//	tools::clearConsole();
 
-			if (input == '1')
-			{
-				tools::clearConsole();
-				printDate(user.first_name, user.last_name);
-				addMealForUser(user);
-				tools::clearConsole();
-			}
-			else if (input == '2')
-			{
-				getAllMealsForUser(user.id);
-			}
-			else if (input == '3')
-			{
-				addWorkoutForUser(user);
-			}
-			else if (input == '4')
-			{
-				getAllWorkoutsForUser(user.id);
-			}
+			//	break;
+			//case '<':
+			//	tools::clearConsole();
 
-			if (input == 'E' || input == 'e')
-			{
-				break;
-			}
+			//	break;
+			//case '>':
+			//	tools::clearConsole();
+
+			//	break;
+			///*case "H":
+			//case "h":
+			//	tools::clearConsole();
+			//	printHelp();
+			//	break;*/
+			//case 'Å':
+			//case 'å':
+			//	mainPanel();
+			//	break;
+			//}
 		}
-
-		mainPanel();
 	}
 
 	std::string validatePassword(std::string password)
@@ -414,6 +431,10 @@ namespace bll
 
 	void addMealForUser(User user)
 	{
+		/*tools::clearConsole();
+		printDate(user.first_name, user.last_name);
+		addMealForUser(user);
+		tools::clearConsole();*/
 		Meal meal;
 		meal.id = tools::generateGUID();
 		meal.created_by = user.id;
@@ -472,6 +493,36 @@ namespace bll
 		updateDailySummaryOnAddingWorkout(workout, user);
 	}
 
+	void getGoalForUser(std::string goalId, int cellWidth)
+	{
+		Goal goal = dal::getGoalById(goalId);
+
+		std::cout << std::endl << "GOAL" << std::endl;
+
+		std::cout << std::string(cellWidth * 3, '-') << "\n";
+
+		std::cout
+			<< "Type" << std::string(cellWidth - 4, ' ')
+			<< "Weekly Change" << std::string(cellWidth - 13, ' ')
+			<< "Calorie Adjustment" << std::string(cellWidth - 17, ' ') << "\n";
+
+		std::cout << std::string(cellWidth * 3, '-') << "\n";
+
+		std::cout << goal.type;
+		int spaces = cellWidth - goal.type.length();
+		for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+		std::cout << goal.weekly_change;
+		spaces = cellWidth - goal.weekly_change.length();
+		for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+		std::cout << goal.calorie_adjustment;
+		spaces = cellWidth - goal.calorie_adjustment.length();
+		for (int i = 0; i < spaces; ++i) std::cout << ' ';
+
+		std::cout << "\n" << std::string(cellWidth * 3, '-') << "\n";
+	}
+
 	void getMealForUser(std::string userId, std::string mealId)
 	{
 		Meal meal = dal::getMealById(mealId);
@@ -490,9 +541,11 @@ namespace bll
 		std::vector<Meal> meals = dal::getMealsByUserId(userId);
 		size_t id = 1;
 
+		std::cout << std::endl << "MEALS" << std::endl;
 		std::cout << std::string(cellWidth * 7 - NUMBER_DIGITS, '-') << "\n";
 
-		std::cout << "Id" << std::string(cellWidth - 2 - NUMBER_DIGITS, ' ')
+		std::cout 
+			<< "Id" << std::string(cellWidth - 2 - NUMBER_DIGITS, ' ')
 			<< "Name" << std::string(cellWidth - 4, ' ')
 			<< "Calories" << std::string(cellWidth - 8, ' ')
 			<< "Protein" << std::string(cellWidth - 7, ' ')
@@ -553,9 +606,12 @@ namespace bll
 		std::vector<Workout> workouts = dal::getWorkoutsByUserId(userId);
 		size_t id = 1;
 
+		std::cout << std::endl << "WORKOUTS" << std::endl;
+
 		std::cout << std::string(cellWidth * 4 - NUMBER_DIGITS, '-') << "\n";
 
-		std::cout << "Id" << std::string(cellWidth - 2 - NUMBER_DIGITS, ' ')
+		std::cout 
+			<< "Id" << std::string(cellWidth - 2 - NUMBER_DIGITS, ' ')
 			<< "Name" << std::string(cellWidth - 4, ' ')
 			<< "Calories Burned" << std::string(cellWidth - 15, ' ')
 			<< "Created On" << std::string(cellWidth - 10, ' ') << "\n";
