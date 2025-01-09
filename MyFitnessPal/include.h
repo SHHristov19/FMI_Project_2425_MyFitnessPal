@@ -12,13 +12,15 @@
 namespace pl
 {
 	void printTitle();
-	void printAsciiDate();
+	void printAsciiDate(int days = 0);
 	void printMenuOptions();
 	void printLoginTitle();
 	void printSignUpTitle();
-	void printWorkoutsTitle();
-	void printMealsTitle(); 
+	void printHelpTitle();
 	void printCRUDMenuOptions();
+
+	void printAddMealTitle();
+	void printAddWorkoutTitle();
 }
 
 namespace bll
@@ -29,9 +31,9 @@ namespace bll
 	void signIn();
 	void homePanel(User user);
 
-	void printHelp();
-	void printDateAndWelcome(std::string firstName, std::string lastName);
-	void printDailySymmary(User user);
+	void printHelp(User user);
+	void printDateAndWelcome(std::string firstName, std::string lastName, int days = 0);
+	void printDailySymmary(User user, int days = 0);
 
 	std::string enterValidPassword(std::string password);
 	std::string validatePassword(std::string password);
@@ -40,18 +42,18 @@ namespace bll
 	char enterValidType(const char types[], size_t typeSize, std::string errorMsg);
 	std::string enterValidType(const std::string types[], size_t typeSize, std::string errorMsg);
 
-	void updateDailySummaryOnAddingMeal(Meal meal, User user);
-	void addMealForUser(User user);
-	void updateDailySummaryOnAddingWorkout(Workout workout, User user);
-	void addWorkoutForUser(User user);
+	void updateDailySummaryOnAddingMeal(Meal meal, User user, int days = 0);
+	void addMealForUser(User user, int days = 0);
+	void updateDailySummaryOnAddingWorkout(Workout workout, User user, int days = 0);
+	void addWorkoutForUser(User user, int days = 0);
 
-	void getGoalForUser(std::string goalId, int cellWidth = 20);
+	void getGoalForUser(std::string goalId);
 
-	void getAllMealsForUser(std::string userId, int cellWidth = 20);
+	void getAllMealsForUser(std::string userId, int days);
 	void getMealForUser(std::string userId, std::string mealId);
 
 	void getWorkoutForUser(std::string userId, std::string workoutId);
-	void getAllWorkoutsForUser(std::string userId, int cellWidth = 20);
+	void getAllWorkoutsForUser(std::string userId, int days);
 
 	double calculateBMR(User user);
 	int calculateGoalCalories(User user, std::string goalType, unsigned calorieAdjustment);
@@ -92,11 +94,11 @@ namespace dal
 	Goal getGoalById(std::string id);
 	Meal getMealById(std::string id);
 	Workout getWorkoutById(std::string id);
-	DailySummary getDailySummaryByUserUdToday(std::string id);
+	DailySummary getDailySummaryByUserIdToday(std::string id, int days = 0);
 
 	std::vector<Goal> getGoalsByUserId(std::string id);
-	std::vector<Meal> getMealsByUserId(std::string id);
-	std::vector<Workout> getWorkoutsByUserId(std::string id);
+	std::vector<Meal> getMealsByUserId(std::string id, bool forToday = false, int days = 0);
+	std::vector<Workout> getWorkoutsByUserId(std::string id, bool forToday = false, int days = 0);
 	std::vector<DailySummary> getDailySummariesByUserId(std::string id);
 	std::vector<MacronutrientRatio> getMacronutrientRatioByUserId(std::string id);
 
@@ -107,7 +109,7 @@ namespace tools
 {
 	void to_upper(std::string& data);
 	std::string passwordHash(const std::string& password);
-	std::string getDatetime(const char* format);
+	std::string getDatetime(const char* format, int days = 0);
 	std::string generateGUID();
 
 	void setConsoleSize();
@@ -121,5 +123,6 @@ namespace tools
 	void hideCursor();
 	void showCursor();
 	void clearLine();
+	void toLower(std::string& data);
 	std::string getInput();
 }

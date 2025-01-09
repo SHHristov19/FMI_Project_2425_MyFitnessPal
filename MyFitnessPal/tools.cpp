@@ -39,17 +39,19 @@ namespace tools
         return hashStr;
     }
 
-    std::string getDatetime(const char* format)
+    std::string getDatetime(const char* format, int days)
     {
         // Get the current date
         time_t t = time(0);
+        t += days * 24 * 60 * 60; // Add days to the current date
+
         tm now;
         localtime_s(&now, &t);
 
         char date[30];
         strftime(date, sizeof(date), format, &now);
 
-		return date;
+        return date;
     }
 
     std::string generateGUID()
@@ -145,6 +147,14 @@ namespace tools
 		std::cout << "\033[A\33[2K\r" << std::flush; // ANSI escape code to move up one line and clear the line
     } 
 
+	void toLower(std::string& data)
+	{
+		for (char& c : data)
+		{
+			c = std::tolower(c);
+		}
+	}
+
 	std::string getInput()
 	{
 		std::string line;
@@ -155,6 +165,7 @@ namespace tools
 		
 		std::getline(std::cin, line);
         
+		toLower(line);
 
 		return line;
 	}

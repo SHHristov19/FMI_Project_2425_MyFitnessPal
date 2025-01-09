@@ -181,3 +181,5 @@ const std::string ASCII_SEPARATOR[6] = {
 const std::string TABULATION = "\t\t\t\t\t";
 
 const int NUMBER_DIGITS = 10;
+
+const int CELL_WIDTH = 20;

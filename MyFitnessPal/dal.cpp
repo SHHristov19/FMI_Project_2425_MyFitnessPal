@@ -307,6 +307,7 @@ namespace dal
 			readProperty(line, start, end, meal.carbohydrates);
 			readProperty(line, start, end, meal.created_by);
 			readProperty(line, start, end, meal.created_on);
+			readProperty(line, start, end, meal.date);
 
 			// Add the meal to the vector
 			meals.push_back(meal);
@@ -328,7 +329,8 @@ namespace dal
 				<< meal.fat << ","
 				<< meal.carbohydrates << ","
 				<< meal.created_by << ","
-				<< meal.created_on << "\n";
+				<< meal.created_on << ","
+				<< meal.date << "\n";
 
 			out.close();
 		}
@@ -350,13 +352,13 @@ namespace dal
 		}
 	}	
 
-	std::vector<Meal> getMealsByUserId(std::string id)
+	std::vector<Meal> getMealsByUserId(std::string id, bool forToday, int days)
 	{
 		std::vector<Meal> meals = readDataFromMealsFile(), result;
 
 		for (Meal meal : meals)
 		{
-			if (meal.created_by == id)
+			if (meal.created_by == id && ((forToday) ? meal.date == tools::getDatetime("%d.%m.%Y", days) : true))
 			{
 				result.push_back(meal);
 			}
@@ -386,7 +388,8 @@ namespace dal
 							<< meal.fat << ","
 							<< meal.carbohydrates << ","
 							<< meal.created_by << ","
-							<< meal.created_on << "\n";
+							<< meal.created_on << ","
+							<< meal.date << "\n";
 					}
 				}
 				else
@@ -398,7 +401,8 @@ namespace dal
 						<< updatedMeal.fat << ","
 						<< updatedMeal.carbohydrates << ","
 						<< updatedMeal.created_by << ","
-						<< updatedMeal.created_on << "\n";
+						<< updatedMeal.created_on << ","
+						<< updatedMeal.date << "\n";
 				}
 			}
 		}
@@ -436,6 +440,7 @@ namespace dal
 			readProperty(line, start, end, workout.calories_burned);
 			readProperty(line, start, end, workout.created_by);
 			readProperty(line, start, end, workout.created_on);
+			readProperty(line, start, end, workout.date);
 
 			// Add the workout to the vector
 			workouts.push_back(workout);
@@ -454,7 +459,8 @@ namespace dal
 				<< workout.name << ","
 				<< workout.calories_burned << ","
 				<< workout.created_by << ","
-				<< workout.created_on << "\n"; 
+				<< workout.created_on << ","
+				<< workout.date << "\n"; 
 
 			out.close();
 		}
@@ -476,13 +482,13 @@ namespace dal
 		}
 	}
 
-	std::vector<Workout> getWorkoutsByUserId(std::string id)
+	std::vector<Workout> getWorkoutsByUserId(std::string id, bool forToday, int days)
 	{
 		std::vector<Workout> workouts = readDataFromWorkoutsFile(), result;
 
 		for (Workout workout : workouts)
 		{
-			if (workout.created_by == id)
+			if (workout.created_by == id && ((forToday) ? workout.date == tools::getDatetime("%d.%m.%Y", days) : true))
 			{
 				result.push_back(workout);
 			}
@@ -610,13 +616,13 @@ namespace dal
 		return result;
 	}
 
-	DailySummary getDailySummaryByUserUdToday(std::string id)
+	DailySummary getDailySummaryByUserIdToday(std::string id, int days)
 	{
 		std::vector<DailySummary> dailySummaries = readDataFromDailySummariesFile();
 
 		for (DailySummary dailySummary : dailySummaries)
 		{
-			if (dailySummary.user_id == id && dailySummary.date == tools::getDatetime("%d.%m.%Y"))
+			if (dailySummary.user_id == id && dailySummary.date == tools::getDatetime("%d.%m.%Y", days))
 			{
 				return dailySummary;
 			}

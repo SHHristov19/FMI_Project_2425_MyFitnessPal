@@ -38,6 +38,7 @@ struct Meal
 	std::string carbohydrates; // in grams
     std::string created_by; // foreign key to Users
     std::string created_on;
+    std::string date;
 };
 
 struct Workout 
@@ -47,6 +48,7 @@ struct Workout
     std::string calories_burned; // in kcal
     std::string created_by; // foreign key to Users
     std::string created_on;
+	std::string date;
 };
 
 struct DailySummary 
