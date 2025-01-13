@@ -148,7 +148,7 @@ namespace tools
 	void setConsoleSize()
 	{
         // Set the terminal window size to width and height
-        std::cout << "\033[8;40;140t";
+        std::cout << "\033[8;40;155t";
 	}
 
     void hideCursor()

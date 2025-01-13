@@ -56,6 +56,7 @@ namespace bll
 
 	double calculateBMR(User user);
 	int calculateGoalCalories(User user, std::string goalType, unsigned calorieAdjustment);
+	void calculateMacronutrients(User user, Goal goal, int calories, MacronutrientRatio& ratio);
 
 	DailySummary createDailySummary(User user, Goal goal, int days = 0);
 
@@ -78,7 +79,6 @@ namespace dal
 	std::vector<Meal> readDataFromMealsFile();
 	std::vector<Workout> readDataFromWorkoutsFile(); 
 	std::vector<DailySummary> readDataFromDailySummariesFile();
-	std::vector<MacronutrientRatio> readDataFromMacronutrientRatiosFile();
 
 	// Write data to files
 	void writeDataToUsersFile(User user);
@@ -86,7 +86,6 @@ namespace dal
 	void writeDataToMealsFile(Meal meal);
 	void writeDataToWorkoutsFile(Workout workout);
 	void writeDataToDailySummariesFile(DailySummary dailySummary);
-	void writeDataToMacronutrientRatioFile(MacronutrientRatio macronutrientRatio);
 
 	// Update data from file
 	void updateOrDeleteUser(User user, bool isUpdate);
@@ -107,9 +106,6 @@ namespace dal
 	std::vector<Meal> getMealsByUserId(std::string id, bool forToday = false, int days = 0);
 	std::vector<Workout> getWorkoutsByUserId(std::string id, bool forToday = false, int days = 0);
 	std::vector<DailySummary> getDailySummariesByUserId(std::string id);
-	std::vector<MacronutrientRatio> getMacronutrientRatioByUserId(std::string id);
-
-	
 }
 
 namespace tools

@@ -6,12 +6,9 @@ namespace bll
 	void signUp()
 	{
 		User user;
-		ActivityLevel activityLevel;
 		Goal goal;
-		GoalType goalType; 
 		
 		pl::printSignUpTitle();
-		std::cin.ignore();
 
 		enterUserData(user, goal);
 
@@ -93,7 +90,7 @@ namespace bll
 				tools::colorRed();
 				std::cout << TABULATION << "Invalid input. Please enter a valid age." << std::endl;
 				tools::resetColor();
-				std::cin.ignore(); // Clear the input buffer
+
 				std::cout << TABULATION << "Enter your age: ";
 				std::getline(std::cin, newUser.age);
 			}
@@ -112,11 +109,11 @@ namespace bll
 		std::getline(std::cin, newUser.weight);
 		std::cout << std::endl;
 
-        std::cout << TABULATION << "1. VeryActive (intense exercise or physical job)" << std::endl;
-        std::cout << TABULATION << "2. ActiveJob (walking or standing most of the day)" << std::endl;
-        std::cout << TABULATION << "3. ModerateActivity (light exercise or sports 3-5 days a week)" << std::endl;
-        std::cout << TABULATION << "4. LightActivity (office work or sitting most of the day)" << std::endl;
-        std::cout << TABULATION << "5. SedentaryJob (little or no exercise)" << std::endl;
+        std::cout << TABULATION << "1. VeryActive (6-7 days of training and very active daily life)" << std::endl;
+        std::cout << TABULATION << "2. ActiveJob (3-5 days of training and active daily life)" << std::endl;
+        std::cout << TABULATION << "3. ModerateActivity (1-3 days of training and moderately active daily life)" << std::endl;
+        std::cout << TABULATION << "4. LightActivity (Light exercise or sports 1-3 days a week)" << std::endl;
+        std::cout << TABULATION << "5. SedentaryJob (Little or no exercise, desk job)" << std::endl;
 		std::cout << TABULATION << "Enter your activity level [1-5]: ";
 		enterValidType(ACTIVITY_LEVEL_TYPES, 5, "Invalid input. Please enter a valid activity level [1-5]: ", newUser.activityLevel, isUpdate);
 
@@ -138,10 +135,9 @@ namespace bll
         user.type = (newUser.type.empty()) ? user.type : newUser.type;
         user.username = (newUser.username.empty()) ? user.username : newUser.username;
         user.password = (newUser.password.empty()) ? user.password : tools::passwordHash(newUser.password);
+
 		std::cout << std::endl;
 		enterGoalData(goal, isUpdate);
-
-		
 
 		if (isUpdate)
 		{
@@ -241,10 +237,10 @@ namespace bll
 	DailySummary printDailySymmary(User user, int days)
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
+		Goal goal = dal::getGoalById(user.goalId);
 
 		if (dailySummary.id.empty())
 		{
-			Goal goal = dal::getGoalById(user.goalId);
 			if (!goal.id.empty())
 			{
 				dailySummary = createDailySummary(user, goal, days);
@@ -258,16 +254,19 @@ namespace bll
 		{
 			tools::colorCyan();
 
-			std::cout << TABULATION << "Calories Consumed: " << dailySummary.caloriesConsumed
-				<< ((user.type == "Premium") ? (TABULATION + "Protein: " + dailySummary.protein + "\n") : "\n");
+			MacronutrientRatio macronutrientRatio;
+			calculateMacronutrients(user, goal, std::stoi(dailySummary.recommendedCalories), macronutrientRatio);
 
-			std::cout << TABULATION << "Calories Burned: " << dailySummary.caloriesBurned
-				<< ((user.type == "Premium") ? (TABULATION + "Fat: " + dailySummary.fat + "\n") : "\n");
+			std::cout << "\t\t" << "Calories Consumed: " << dailySummary.caloriesConsumed << "\t\t\t" << "Protein: " + dailySummary.protein
+				<< ((user.type == "Premium") ? ("\t\t\tProtein-Ration: " + macronutrientRatio.protein + "g.\n") : "\n");
 
-			std::cout << TABULATION << "Recommended Calories: " << dailySummary.recommendedCalories
-				<< ((user.type == "Premium") ? (TABULATION.substr(1) + "Carbohydrates: " + dailySummary.carbohydrates + "\n") : "\n");
+			std::cout << "\t\t" << "Calories Burned: " << dailySummary.caloriesBurned << "\t\t\t" << "Fat: " + dailySummary.fat
+				<< ((user.type == "Premium") ? ("\t\t\t\tFat-Ratio: " + macronutrientRatio.fat + "g.\n") : "\n");
 
-			std::cout << TABULATION << "Calorie Balance: " << dailySummary.calorieBalance << "\n\n";
+			std::cout << "\t\t" << "Recommended Calories: " << dailySummary.recommendedCalories << "\t\t" << "Carbohydrates: " + dailySummary.carbohydrates
+				<< ((user.type == "Premium") ? ("\t\tCarbohydrates-Ratio: " + macronutrientRatio.carbohydrates + "g.\n") : "\n");
+
+			std::cout << "\t\t" << "Calorie Balance: " << dailySummary.calorieBalance << "\n\n";
 
 			tools::resetColor();
 		}
@@ -479,7 +478,7 @@ namespace bll
 			}
 
 			tools::colorRed();
-			std::cout << TABULATION << errorMsg << std::endl;
+			std::cout << TABULATION << errorMsg;
 			tools::resetColor();
 		}
 	}
@@ -892,6 +891,28 @@ namespace bll
 		}
 
 		return goalCalories;
+	}
+
+	void calculateMacronutrients(User user, Goal goal, int calories, MacronutrientRatio& ratio)
+	{
+		if (goal.type == "1")
+		{
+			ratio.protein = std::to_string((int)(MACRO_RATIO_LOSS_PROTEIN * calories / PROTEIN_CALORIES_PER_GRAM));
+			ratio.fat = std::to_string((int)(MACRO_RATIO_LOSS_FAT * calories / FAT_CALORIES_PER_GRAM));
+			ratio.carbohydrates = std::to_string((int)(MACRO_RATIO_LOSS_CARBOHYDRATES * calories / CARBOHYDRATE_CALORIES_PER_GRAM));
+		}
+		else if (goal.type == "2")
+		{
+			ratio.protein = std::to_string((int)(MACRO_RATIO_MAINTAIN_PROTEIN * calories / PROTEIN_CALORIES_PER_GRAM));
+			ratio.fat = std::to_string((int)(MACRO_RATIO_MAINTAIN_FAT * calories / FAT_CALORIES_PER_GRAM));
+			ratio.carbohydrates = std::to_string((int)(MACRO_RATIO_MAINTAIN_CARBOHYDRATES * calories / CARBOHYDRATE_CALORIES_PER_GRAM));
+		}
+		else if (goal.type == "3")
+		{
+			ratio.protein = std::to_string((int)(MACRO_RATIO_GAIN_PROTEIN * calories / PROTEIN_CALORIES_PER_GRAM));
+			ratio.fat = std::to_string((int)(MACRO_RATIO_GAIN_FAT * calories / FAT_CALORIES_PER_GRAM));
+			ratio.carbohydrates = std::to_string((int)(MACRO_RATIO_GAIN_CARBOHYDRATES * calories / CARBOHYDRATE_CALORIES_PER_GRAM));
+		}
 	}
 
 	DailySummary createDailySummary(User user, Goal goal, int days)
