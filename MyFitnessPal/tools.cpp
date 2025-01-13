@@ -54,6 +54,26 @@ namespace tools
         return date;
     }
 
+    bool isDigit(char ch)
+    {
+        return ch >= '0' && ch <= '9';
+    }
+
+    size_t getDigits(std::string input)
+    {
+        std::string digits;
+
+        for (char ch : input)
+        {
+            if (isDigit(ch))
+            {
+                digits += ch;
+            }
+        }
+
+        return stoi(digits);
+    }
+
     std::string generateGUID()
     {
         const char* chars = "0123456789ABCDEF"; // Hexadecimal characters

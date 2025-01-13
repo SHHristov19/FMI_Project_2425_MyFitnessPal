@@ -21,6 +21,8 @@ namespace pl
 
 	void printAddMealTitle();
 	void printAddWorkoutTitle();
+	void printUpdateMealTitle();
+	void printUpdateWorkoutTitle();
 }
 
 namespace bll
@@ -33,7 +35,7 @@ namespace bll
 
 	void printHelp(User user);
 	void printDateAndWelcome(std::string firstName, std::string lastName, int days = 0);
-	void printDailySymmary(User user, int days = 0);
+	DailySummary printDailySymmary(User user, int days = 0);
 
 	std::string enterValidPassword(std::string password);
 	std::string validatePassword(std::string password);
@@ -42,23 +44,25 @@ namespace bll
 	char enterValidType(const char types[], size_t typeSize, std::string errorMsg);
 	std::string enterValidType(const std::string types[], size_t typeSize, std::string errorMsg);
 
-	void updateDailySummaryOnAddingMeal(Meal meal, User user, int days = 0);
+	void updateDailySummaryMeal(Meal meal, User user, int days = 0);
 	void addMealForUser(User user, int days = 0);
-	void updateDailySummaryOnAddingWorkout(Workout workout, User user, int days = 0);
+	void updateDailySummaryWorkout(Workout workout, User user, int days = 0);
 	void addWorkoutForUser(User user, int days = 0);
 
 	void getGoalForUser(std::string goalId);
 
-	void getAllMealsForUser(std::string userId, int days);
-	void getMealForUser(std::string userId, std::string mealId);
-
-	void getWorkoutForUser(std::string userId, std::string workoutId);
-	void getAllWorkoutsForUser(std::string userId, int days);
+	std::vector<Meal> getAllMealsForUser(std::string userId, int days);
+	std::vector<Workout> getAllWorkoutsForUser(std::string userId, int days);
 
 	double calculateBMR(User user);
 	int calculateGoalCalories(User user, std::string goalType, unsigned calorieAdjustment);
 
-	DailySummary createDailySummary(User user, Goal goal);
+	DailySummary createDailySummary(User user, Goal goal, int days = 0);
+
+	void printMealData(Meal meal);
+	void printWorkoutData(Workout workout);
+	void updateMealForUser(User user, Meal meal, DailySummary dailySummary);
+	void updateWorkoutForUser(User user, Workout workout, DailySummary dailySummary);
 }
 
 namespace dal
@@ -111,6 +115,8 @@ namespace tools
 	std::string passwordHash(const std::string& password);
 	std::string getDatetime(const char* format, int days = 0);
 	std::string generateGUID();
+	bool isDigit(char ch);
+	size_t getDigits(std::string input);
 
 	void setConsoleSize();
 	void clearConsole();

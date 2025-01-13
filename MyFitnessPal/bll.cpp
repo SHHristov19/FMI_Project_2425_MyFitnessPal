@@ -190,7 +190,7 @@ namespace bll
 		std::cout << "\n\n";
 	}
 
-	void printDailySymmary(User user, int days)
+	DailySummary printDailySymmary(User user, int days)
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
 
@@ -199,7 +199,7 @@ namespace bll
 			Goal goal = dal::getGoalById(user.goal_id);
 			if (goal.id != "")
 			{
-				dailySummary = createDailySummary(user, goal);
+				dailySummary = createDailySummary(user, goal, days);
 			}
 			else
 			{
@@ -223,6 +223,8 @@ namespace bll
 
 			tools::resetColor();
 		}
+
+		return dailySummary;
 	}
 
 	void printHelp(User user)
@@ -259,18 +261,49 @@ namespace bll
 		{
 			printDateAndWelcome(user.first_name, user.last_name, days);
 
-			printDailySymmary(user, days);
+			DailySummary dailySummary = printDailySymmary(user, days);
 
 			std::cout << std::endl;
 			getGoalForUser(user.goal_id);
-			getAllMealsForUser(user.id, days);
-			getAllWorkoutsForUser(user.id, days);
+			std::vector<Meal> dailyMeals = getAllMealsForUser(user.id, days);
+			std::vector<Workout> dailyWorkouts = getAllWorkoutsForUser(user.id, days);
 
 			std::string input = tools::getInput();
 			if (input == "h")
 			{
 				tools::clearConsole();
 				printHelp(user);
+			}
+			else if (!input.empty() && input[0] == 'u' || input[0] == 'U')
+			{
+				if (input[1] == 'm' || input[1] == 'M')
+				{ 
+					size_t mealId = tools::getDigits(input) - 1;
+                    if (mealId >= 0 && mealId <= dailyMeals.size() - 1)
+					{ 
+						tools::clearConsole();
+						pl::printUpdateMealTitle();
+						updateMealForUser(user, dailyMeals[mealId], dailySummary);
+					}
+					else
+					{
+						// not found msg
+					}
+				}
+				if (input[1] == 'w' || input[1] == 'W')
+				{
+					size_t workoutId = tools::getDigits(input) - 1;
+					if (workoutId >= 0 && workoutId <= dailyWorkouts.size() - 1)
+					{
+						tools::clearConsole();
+						pl::printUpdateWorkoutTitle();
+						updateWorkoutForUser(user, dailyWorkouts[workoutId], dailySummary);
+					}
+					else
+					{
+						// not found msg
+					}
+				}
 			}
 			else if (input == "aw" || input == "wa")
 			{
@@ -409,7 +442,7 @@ namespace bll
 		}
 	}
 
-	void updateDailySummaryOnAddingMeal(Meal meal, User user, int days)
+	void updateDailySummaryMeal(Meal meal, User user, int days)
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
 
@@ -462,10 +495,10 @@ namespace bll
 		meal.date = tools::getDatetime("%d.%m.%Y", days);
 		dal::writeDataToMealsFile(meal);
 
-		updateDailySummaryOnAddingMeal(meal, user, days);
+		updateDailySummaryMeal(meal, user, days);
 	}
 
-	void updateDailySummaryOnAddingWorkout(Workout workout, User user, int days)
+	void updateDailySummaryWorkout(Workout workout, User user, int days)
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
 
@@ -499,7 +532,7 @@ namespace bll
 		workout.date = tools::getDatetime("%d.%m.%Y", days);
 		dal::writeDataToWorkoutsFile(workout);
 
-		updateDailySummaryOnAddingWorkout(workout, user, days);
+		updateDailySummaryWorkout(workout, user, days);
 	}
 
 	void getGoalForUser(std::string goalId)
@@ -534,20 +567,7 @@ namespace bll
 		tools::resetColor();
 	}
 
-	void getMealForUser(std::string userId, std::string mealId)
-	{
-		Meal meal = dal::getMealById(mealId);
-		if (meal.created_by == userId)
-		{
-			std::cout << "Name: " << meal.name << std::endl;
-			std::cout << "Calories: " << meal.calories << std::endl;
-			std::cout << "Protein: " << meal.protein << std::endl;
-			std::cout << "Fat: " << meal.fat << std::endl;
-			std::cout << "Carbohydrates: " << meal.carbohydrates << std::endl;
-		}
-	}
-
-	void getAllMealsForUser(std::string userId, int days)
+	std::vector<Meal> getAllMealsForUser(std::string userId, int days)
 	{
 		std::vector<Meal> meals = dal::getMealsByUserId(userId, true, days);
 		size_t id = 1;
@@ -600,6 +620,8 @@ namespace bll
 		}
 
 		std::cout << "\t" << std::string(CELL_WIDTH * 7 - NUMBER_DIGITS, '-') << "\n";
+
+		return meals;
 	}
 
 	void getWorkoutForUser(std::string userId, std::string workoutId)
@@ -612,7 +634,7 @@ namespace bll
 		}
 	}
 
-	void getAllWorkoutsForUser(std::string userId, int days)
+	std::vector<Workout> getAllWorkoutsForUser(std::string userId, int days)
 	{
 		std::vector<Workout> workouts = dal::getWorkoutsByUserId(userId, true, days);
 		size_t id = 1;
@@ -651,6 +673,92 @@ namespace bll
         }
 
         std::cout << TABULATION << std::string(CELL_WIDTH * 4 - NUMBER_DIGITS, '-') << "\n";
+
+		return workouts;
+	}
+
+	void printMealData(Meal meal)
+	{
+		std::cout << TABULATION << "Name: " << meal.name << std::endl;
+		std::cout << TABULATION << "Calories: " << meal.calories << std::endl;
+		std::cout << TABULATION << "Protein: " << meal.protein << std::endl;
+		std::cout << TABULATION << "Fat: " << meal.fat << std::endl;
+		std::cout << TABULATION << "Carbohydrates: " << meal.carbohydrates << std::endl;
+	}
+
+	void printWorkoutData(Workout workout)
+	{
+		std::cout << TABULATION << "Name: " << workout.name << std::endl;
+		std::cout << TABULATION << "Calories Burned: " << workout.calories_burned << std::endl;
+	}
+
+	void updateMealForUser(User user, Meal meal, DailySummary dailySummary)
+	{
+		printMealData(meal);
+		std::string name, calories, protein, fat, carbohydrates;
+
+		tools::colorRed();
+		std::cout << std::endl;
+		std::cout << TABULATION << "If ypu want to update data type new data, otherwise leve the input empty!\n";
+		tools::resetColor();
+
+		std::cout << TABULATION << "Enter the name of the meal: ";
+		std::getline(std::cin, name);
+		std::cout << TABULATION << "Enter the calories of the meal: ";
+		std::getline(std::cin, calories);
+		std::cout << TABULATION << "Enter the protein content of the meal: ";
+		std::getline(std::cin, protein);
+		std::cout << TABULATION << "Enter the fat content of the meal: ";
+		std::getline(std::cin, fat);
+		std::cout << TABULATION << "Enter the carbohydrates content of the meal: ";
+		std::getline(std::cin, carbohydrates);
+
+		dailySummary.calories_consumed = std::to_string(std::stoi(dailySummary.calories_consumed) - std::stoi(meal.calories));
+		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) - std::stoi(meal.protein));
+		dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) - std::stoi(meal.fat));
+		dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) - std::stoi(meal.carbohydrates));
+
+		meal.name = (name.empty()) ? meal.name : name;
+		meal.calories = (calories.empty()) ? meal.calories : calories;
+		meal.protein = (protein.empty()) ? meal.protein : protein;
+		meal.fat = (fat.empty()) ? meal.fat : fat;
+		meal.carbohydrates = (carbohydrates.empty()) ? meal.carbohydrates : carbohydrates;
+
+		dailySummary.calories_consumed = std::to_string(std::stoi(dailySummary.calories_consumed) + std::stoi(meal.calories));
+		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) + std::stoi(meal.protein));
+		dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) + std::stoi(meal.fat));
+		dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) + std::stoi(meal.carbohydrates));
+		dailySummary.calorie_balance = std::to_string(std::stoi(dailySummary.calories_consumed) - std::stoi(dailySummary.calories_burned));
+
+		dal::updateOrDeleteMeal(meal, true);
+		dal::updateOrDeleteDailySummary(dailySummary, true);
+	}
+
+	void updateWorkoutForUser(User user, Workout workout, DailySummary dailySummary)
+	{
+		printWorkoutData(workout);
+		std::string name, caloriesBurned;
+
+		tools::colorRed();
+		std::cout << std::endl;
+		std::cout << TABULATION << "If ypu want to update data type new data, otherwise leve the input empty!\n";
+		tools::resetColor();
+
+		std::cout << TABULATION << "Enter the name of the workout: ";
+		std::getline(std::cin, name);
+		std::cout << TABULATION << "Enter the calories burned during the workout: ";
+		std::getline(std::cin, caloriesBurned);
+
+		dailySummary.calories_burned = std::to_string(std::stoi(dailySummary.calories_burned) - std::stoi(workout.calories_burned));
+
+		workout.name = (name.empty()) ? workout.name : name;
+		workout.calories_burned = (caloriesBurned.empty()) ? workout.calories_burned : caloriesBurned;
+
+		dailySummary.calories_burned = std::to_string(std::stoi(dailySummary.calories_burned) + std::stoi(workout.calories_burned));
+		dailySummary.calorie_balance = std::to_string(std::stoi(dailySummary.calories_consumed) - std::stoi(dailySummary.calories_burned));
+
+		dal::updateOrDeleteWorkout(workout, true);
+		dal::updateOrDeleteDailySummary(dailySummary, true);
 	}
 
 	double calculateBMR(User user)
@@ -711,7 +819,7 @@ namespace bll
 		return goalCalories;
 	}
 
-	DailySummary createDailySummary(User user, Goal goal)
+	DailySummary createDailySummary(User user, Goal goal, int days)
 	{
 		DailySummary dailySummary;
 
@@ -724,7 +832,7 @@ namespace bll
 		dailySummary.fat = "0";
 		dailySummary.carbohydrates = "0";
 		dailySummary.recommended_calories = std::to_string(calculateGoalCalories(user, goal.type, std::stoi(goal.calorie_adjustment)));
-		dailySummary.date = tools::getDatetime("%d.%m.%Y");
+		dailySummary.date = tools::getDatetime("%d.%m.%Y", days);
 		dailySummary.created_on = tools::getDatetime("%d.%m.%Y %T");
 		dal::writeDataToDailySummariesFile(dailySummary);
 

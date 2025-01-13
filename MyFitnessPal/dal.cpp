@@ -515,7 +515,8 @@ namespace dal
 							<< workout.name << ","
 							<< workout.calories_burned << ","
 							<< workout.created_by << ","
-							<< workout.created_on << "\n";
+							<< workout.created_on << ","
+							<< workout.date << "\n";
 					}
 				}
 				else
@@ -524,7 +525,8 @@ namespace dal
 						<< updatedWorkout.name << ","
 						<< updatedWorkout.calories_burned << ","
 						<< updatedWorkout.created_by << ","
-						<< updatedWorkout.created_on << "\n";
+						<< updatedWorkout.created_on << "," 
+						<< updatedWorkout.date << "\n";
 				}
 			}
 		}

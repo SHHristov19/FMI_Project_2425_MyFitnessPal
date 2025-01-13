@@ -72,8 +72,8 @@ const std::string MACRONUTRIENT_RATIO_FILE_NAME = "data/macronutrientRatios.csv"
 // File Headers
 const std::string USERS_FILE_HEADER = "id,first_name,last_name,age,gender,height,weight,activity_level,goal_id,username,password,type,created_on";
 const std::string GOALS_FILE_HEADER = "id,type,weekly_change,calorie_adjustment";
-const std::string MEALS_FILE_HEADER = "id,name,calories,protein,fat,carbohydrates,created_by,created_on";
-const std::string WORKOUTS_FILE_HEADER = "id,name,calories_burned,created_by,created_on";
+const std::string MEALS_FILE_HEADER = "id,name,calories,protein,fat,carbohydrates,created_by,created_on,date";
+const std::string WORKOUTS_FILE_HEADER = "id,name,calories_burned,created_by,created_on,date";
 const std::string DAILY_SUMMARIES_FILE_HEADER = "id,user_id,date,calories_consumed,calories_burned,recommended_calories,calorie_balance,protein,fat,carbohydrates,created_on";
 const std::string MACRONUTRIENT_RATIO_FILE_HEADER = "id,goal_id,protein_ratio,fat_ratio,carbohydrate_ratio";
 
