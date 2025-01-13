@@ -23,6 +23,7 @@ namespace pl
 	void printAddWorkoutTitle();
 	void printUpdateMealTitle();
 	void printUpdateWorkoutTitle();
+	void printUpdateUserTitle();
 }
 
 namespace bll
@@ -37,19 +38,18 @@ namespace bll
 	void printDateAndWelcome(std::string firstName, std::string lastName, int days = 0);
 	DailySummary printDailySymmary(User user, int days = 0);
 
-	std::string enterValidPassword(std::string password);
-	std::string validatePassword(std::string password);
-
-
-	char enterValidType(const char types[], size_t typeSize, std::string errorMsg);
-	std::string enterValidType(const std::string types[], size_t typeSize, std::string errorMsg);
+	void enterValidPassword(std::string& password, bool isUpdate = false);
+	std::string validatePassword(std::string password, bool isChangePassword);
+	void enterUserData(User& user, Goal& goal, bool isPasswordChange = false);
+	void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string& type, bool isUpdate = false);
 
 	void updateDailySummaryMeal(Meal meal, User user, int days = 0);
 	void addMealForUser(User user, int days = 0);
 	void updateDailySummaryWorkout(Workout workout, User user, int days = 0);
 	void addWorkoutForUser(User user, int days = 0);
+	void updateDailySummary(User user, Goal goal);
 
-	void getGoalForUser(std::string goalId);
+	void getGoalForUser(std::string goalId, Goal& goal);
 
 	std::vector<Meal> getAllMealsForUser(std::string userId, int days);
 	std::vector<Workout> getAllWorkoutsForUser(std::string userId, int days);
@@ -61,8 +61,11 @@ namespace bll
 
 	void printMealData(Meal meal);
 	void printWorkoutData(Workout workout);
+	void printGoalData(Goal goal);
+	void printUserData(User user);
 	void updateMealForUser(User user, Meal meal, DailySummary dailySummary);
 	void updateWorkoutForUser(User user, Workout workout, DailySummary dailySummary);
+	void updateUser(User& user, Goal& goal);
 }
 
 namespace dal
@@ -117,6 +120,7 @@ namespace tools
 	std::string generateGUID();
 	bool isDigit(char ch);
 	size_t getDigits(std::string input);
+	std::string getActivityLevel(std::string level);
 
 	void setConsoleSize();
 	void clearConsole();

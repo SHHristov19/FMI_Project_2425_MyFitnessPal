@@ -2,28 +2,91 @@
 
 namespace bll
 {
+	
 	void signUp()
 	{
 		User user;
 		ActivityLevel activityLevel;
 		Goal goal;
 		GoalType goalType; 
-		user.id = tools::generateGUID();
-		goal.id = tools::generateGUID(); 
-		user.goal_id = goal.id;
-
+		
 		pl::printSignUpTitle();
 		std::cin.ignore();
-		std::cout << TABULATION << "Enter your first name: ";
-		std::getline(std::cin, user.first_name);
-		std::cout << TABULATION << "Enter your last name: ";
-		std::getline(std::cin, user.last_name);
 
+		enterUserData(user, goal);
+
+		mainPanel();
+	}
+
+	void enterGoalData(Goal& goal, bool isUpdate)
+	{
+		Goal newGoal;
+		std::cout << TABULATION << "1. LoseWeight" << std::endl;
+		std::cout << TABULATION << "2. MaintainWeight" << std::endl;
+		std::cout << TABULATION << "3. GainWeight" << std::endl;
+		std::cout << TABULATION << "Enter your goal type [1-3]: ";
+		enterValidType(GOAL_TYPES, 3, "Invalid input. Please enter a valid goal type [1-3]: ", newGoal.type, isUpdate);
+
+		if (newGoal.type != "2")
+		{
+			std::cout << TABULATION << "Enter your weekly change [0.25, 0.5, 0.75, 1] in kg: ";
+			enterValidType(GOAL_WEEKLY_CHANGES, 4, "Invalid input. Please enter a valid weekly change [0.25, 0.5, 0.75, 1]: ", newGoal.weeklyChange, isUpdate);
+
+			if (newGoal.weeklyChange == "0.25")
+			{
+				newGoal.calorieAdjustment = std::to_string(DAILY_DEFICIT_OR_SURPLUS_025KG);
+			}
+			else if (newGoal.weeklyChange == "0.5")
+			{
+				newGoal.calorieAdjustment = std::to_string(DAILY_DEFICIT_OR_SURPLUS_050KG);
+			}
+			else if (newGoal.weeklyChange == "0.75")
+			{
+				newGoal.calorieAdjustment = std::to_string(DAILY_DEFICIT_OR_SURPLUS_075KG);
+			}
+			else if (newGoal.weeklyChange == "1")
+			{
+				newGoal.calorieAdjustment = std::to_string(DAILY_DEFICIT_OR_SURPLUS_100KG);
+			}
+		}
+		else
+		{
+			newGoal.weeklyChange = "0";
+			newGoal.calorieAdjustment = "0";
+		}
+
+		goal.type = (newGoal.type.empty()) ? goal.type : newGoal.type;
+		goal.weeklyChange = (newGoal.weeklyChange.empty()) ? goal.weeklyChange : newGoal.weeklyChange;
+		goal.calorieAdjustment = (newGoal.calorieAdjustment.empty()) ? goal.calorieAdjustment : newGoal.calorieAdjustment;
+
+		if (isUpdate)
+		{
+			dal::updateOrDeleteGoal(goal, true);
+		}
+		else
+		{
+			goal.id = tools::generateGUID();
+			dal::writeDataToGoalsFile(goal);
+		}
+	}
+
+	void enterUserData(User& user, Goal& goal, bool isUpdate)
+	{
+		User newUser;
+		std::cout << TABULATION << "Enter your first name: ";
+		std::getline(std::cin, newUser.firstName);
+		std::cout << TABULATION << "Enter your last name: ";
+		std::getline(std::cin, newUser.lastName);
 		std::cout << TABULATION << "Enter your age: ";
-		std::getline(std::cin, user.age);
+		std::getline(std::cin, newUser.age);
 		while (true)
 		{
-			if (std::cin.fail() || std::stoi(user.age) < 0 || std::stoi(user.age) > 100)
+			if (isUpdate && newUser.age.empty())
+			{
+				break;
+			}
+
+			if (std::cin.fail() || std::stoi(newUser.age) < 0 || std::stoi(newUser.age) > 100)
 			{
 				std::cin.clear();
 				tools::clearLine();
@@ -32,7 +95,7 @@ namespace bll
 				tools::resetColor();
 				std::cin.ignore(); // Clear the input buffer
 				std::cout << TABULATION << "Enter your age: ";
-				std::getline(std::cin, user.age);
+				std::getline(std::cin, newUser.age);
 			}
 			else
 			{
@@ -41,75 +104,60 @@ namespace bll
 		}
 
 		std::cout << TABULATION << "Enter your gender [M/F]: ";
-		user.gender = enterValidType(GENTER_TYPES, 2, "Invalid input. Please enter a valid gender [M/F]: ");
+		enterValidType(GENDER_TYPES, 2, "Invalid input. Please enter a valid gender [M/F]: ", newUser.gender, isUpdate);
 
 		std::cout << TABULATION << "Enter your height (in cm): ";
-		std::cin >> user.height;
+		std::getline(std::cin, newUser.height);
 		std::cout << TABULATION << "Enter your weight (in kg): ";
-		std::cin >> user.weight;
+		std::getline(std::cin, newUser.weight);
 		std::cout << std::endl;
 
-		std::cout << TABULATION << "1. VeryActive" << std::endl;
-		std::cout << TABULATION << "2. ActiveJob" << std::endl;
-		std::cout << TABULATION << "3. ModerateActivity" << std::endl;
-		std::cout << TABULATION << "4. LightActivity" << std::endl;
-		std::cout << TABULATION << "5. SedentaryJob" << std::endl;
+        std::cout << TABULATION << "1. VeryActive (intense exercise or physical job)" << std::endl;
+        std::cout << TABULATION << "2. ActiveJob (walking or standing most of the day)" << std::endl;
+        std::cout << TABULATION << "3. ModerateActivity (light exercise or sports 3-5 days a week)" << std::endl;
+        std::cout << TABULATION << "4. LightActivity (office work or sitting most of the day)" << std::endl;
+        std::cout << TABULATION << "5. SedentaryJob (little or no exercise)" << std::endl;
 		std::cout << TABULATION << "Enter your activity level [1-5]: ";
-		user.activity_level = enterValidType(ACTIVITY_LEVEL_TYPES, 5, "Invalid input. Please enter a valid activity level [1-5]: ");
+		enterValidType(ACTIVITY_LEVEL_TYPES, 5, "Invalid input. Please enter a valid activity level [1-5]: ", newUser.activityLevel, isUpdate);
 
-		std::cout << TABULATION << "1. LoseWeight" << std::endl;
-		std::cout << TABULATION << "2. MaintainWeight" << std::endl;
-		std::cout << TABULATION << "3. GainWeight" << std::endl;
-		std::cout << TABULATION << "Enter your goal type [1-3]: ";
-		goal.type = enterValidType(GOAL_TYPES, 3, "Invalid input. Please enter a valid goal type [1-3]: ");
+		std::cout << TABULATION << "Enter your type [Standard/Premium]: ";
+		enterValidType(USER_ACCOUNT_TYPE, 2, "Invalid input. Please enter a valid type [Standard/Premium]: ", newUser.type, isUpdate);
+
+		std::cout << TABULATION << "Enter your username: ";
+		std::getline(std::cin, newUser.username);
+
+		enterValidPassword(newUser.password, isUpdate);
+
+		user.firstName = (newUser.firstName.empty()) ? user.firstName : newUser.firstName;
+		user.lastName = (newUser.lastName.empty()) ? user.lastName : newUser.lastName;
+        user.age = (newUser.age.empty()) ? user.age : newUser.age;
+        user.gender = (newUser.gender.empty()) ? user.gender : newUser.gender;
+        user.height = (newUser.height.empty()) ? user.height : newUser.height;
+        user.weight = (newUser.weight.empty()) ? user.weight : newUser.weight;
+        user.activityLevel = (newUser.activityLevel.empty()) ? user.activityLevel : newUser.activityLevel;
+        user.type = (newUser.type.empty()) ? user.type : newUser.type;
+        user.username = (newUser.username.empty()) ? user.username : newUser.username;
+        user.password = (newUser.password.empty()) ? user.password : tools::passwordHash(newUser.password);
+		std::cout << std::endl;
+		enterGoalData(goal, isUpdate);
+
 		
-		if (goal.type != "2")
+
+		if (isUpdate)
 		{
-			std::cout << TABULATION << "Enter your weekly change [0.25, 0.5, 0.75, 1] in kg: ";
-			goal.weekly_change = enterValidType(GOAL_WEEKLY_CHANGES, 4, "Invalid input. Please enter a valid weekly change [0.25, 0.5, 0.75, 1]: ");
-		
-			if (goal.weekly_change == "0.25")
-			{
-				goal.calorie_adjustment = DAILY_DEFICIT_OR_SURPLUS_025KG;
-			}
-			else if (goal.weekly_change == "0.50")
-			{
-				goal.calorie_adjustment = DAILY_DEFICIT_OR_SURPLUS_050KG;
-			}
-			else if (goal.weekly_change == "0.75")
-			{
-				goal.calorie_adjustment = DAILY_DEFICIT_OR_SURPLUS_075KG;
-			}
-			else if (goal.weekly_change == "1.00")
-			{
-				goal.calorie_adjustment = DAILY_DEFICIT_OR_SURPLUS_100KG;
-			}
+			dal::updateOrDeleteUser(user, true);
+			updateDailySummary(user, goal);
 		}
 		else
 		{
-			goal.weekly_change = "0";
-			goal.calorie_adjustment = "0";
+			user.id = tools::generateGUID();
+			user.createdOn = tools::getDatetime("%d.%m.%Y %T");
+			user.goalId = goal.id;
+
+			dal::writeDataToUsersFile(user);
+
+			createDailySummary(user, goal);
 		}
-
-		std::cout << TABULATION << "Enter your type [Standard/Premium]: ";
-		user.type = enterValidType(USER_ACCOUNT_TYPE, 2, "Invalid input. Please enter a valid type [Standard/Premium]: ");
-
-        std::cin.ignore();
-        std::cout << TABULATION << "Enter your username: ";
-        std::getline(std::cin, user.username);
-
-		user.password = enterValidPassword(user.password);
-
-		user.password = tools::passwordHash(user.password);
-		user.created_on = tools::getDatetime("%d.%m.%Y %T");
-
-		createDailySummary(user, goal);
-
-		dal::writeDataToGoalsFile(goal);
-		dal::writeDataToUsersFile(user);
-		
-
-		mainPanel();
 	}
 
 	void signIn()
@@ -135,7 +183,7 @@ namespace bll
 			std::getline(std::cin, password);
 			password = tools::passwordHash(password);
 			User findUser = dal::findUserByUsernameAndPassword(username, password);
-			if (findUser.id != "")
+			if (!findUser.id.empty())
 			{
 				homePanel(findUser);
 			}
@@ -194,10 +242,10 @@ namespace bll
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
 
-		if (dailySummary.id == "")
+		if (dailySummary.id.empty())
 		{
-			Goal goal = dal::getGoalById(user.goal_id);
-			if (goal.id != "")
+			Goal goal = dal::getGoalById(user.goalId);
+			if (!goal.id.empty())
 			{
 				dailySummary = createDailySummary(user, goal, days);
 			}
@@ -206,20 +254,20 @@ namespace bll
 				// TO DO createGoal() GO TO DailySummary dailySummary = dal::getDailySummaryByUserUdToday(user.id);
 			}
 		}
-		if (dailySummary.id != "")
+		if (!dailySummary.id.empty())
 		{
 			tools::colorCyan();
 
-			std::cout << TABULATION << "Calories Consumed: " << dailySummary.calories_consumed
+			std::cout << TABULATION << "Calories Consumed: " << dailySummary.caloriesConsumed
 				<< ((user.type == "Premium") ? (TABULATION + "Protein: " + dailySummary.protein + "\n") : "\n");
 
-			std::cout << TABULATION << "Calories Burned: " << dailySummary.calories_burned
+			std::cout << TABULATION << "Calories Burned: " << dailySummary.caloriesBurned
 				<< ((user.type == "Premium") ? (TABULATION + "Fat: " + dailySummary.fat + "\n") : "\n");
 
-			std::cout << TABULATION << "Recommended Calories: " << dailySummary.recommended_calories
+			std::cout << TABULATION << "Recommended Calories: " << dailySummary.recommendedCalories
 				<< ((user.type == "Premium") ? (TABULATION.substr(1) + "Carbohydrates: " + dailySummary.carbohydrates + "\n") : "\n");
 
-			std::cout << TABULATION << "Calorie Balance: " << dailySummary.calorie_balance << "\n\n";
+			std::cout << TABULATION << "Calorie Balance: " << dailySummary.calorieBalance << "\n\n";
 
 			tools::resetColor();
 		}
@@ -259,12 +307,13 @@ namespace bll
 		int days = 0;
 		while (true)
 		{
-			printDateAndWelcome(user.first_name, user.last_name, days);
+			printDateAndWelcome(user.firstName, user.lastName, days);
 
 			DailySummary dailySummary = printDailySymmary(user, days);
+			Goal goal = dal::getGoalById(user.goalId);
 
 			std::cout << std::endl;
-			getGoalForUser(user.goal_id);
+			getGoalForUser(user.goalId, goal);
 			std::vector<Meal> dailyMeals = getAllMealsForUser(user.id, days);
 			std::vector<Workout> dailyWorkouts = getAllWorkoutsForUser(user.id, days);
 
@@ -285,12 +334,8 @@ namespace bll
 						pl::printUpdateMealTitle();
 						updateMealForUser(user, dailyMeals[mealId], dailySummary);
 					}
-					else
-					{
-						// not found msg
-					}
 				}
-				if (input[1] == 'w' || input[1] == 'W')
+				else if (input[1] == 'w' || input[1] == 'W')
 				{
 					size_t workoutId = tools::getDigits(input) - 1;
 					if (workoutId >= 0 && workoutId <= dailyWorkouts.size() - 1)
@@ -299,10 +344,12 @@ namespace bll
 						pl::printUpdateWorkoutTitle();
 						updateWorkoutForUser(user, dailyWorkouts[workoutId], dailySummary);
 					}
-					else
-					{
-						// not found msg
-					}
+				}
+				else if (input[1] == 'u' || input[1] == 'U')
+				{
+					tools::clearConsole();
+					pl::printUpdateUserTitle();
+					updateUser(user, goal);
 				}
 			}
 			else if (input == "aw" || input == "wa")
@@ -333,8 +380,13 @@ namespace bll
 		mainPanel();
 	}
 
-	std::string validatePassword(std::string password)
+	std::string validatePassword(std::string password, bool isChangePassword)
 	{
+		if (isChangePassword && password.empty())
+		{
+			return std::string();
+		}
+
 		if (password.length() < 8)
 		{
 			return "Password must be at least 8 characters long!";
@@ -384,61 +436,51 @@ namespace bll
 		{
 			return "Password must contain at least one special character!";
 		}
-
-		return "";
+		 
+        return std::string();
 	}
 
-	std::string enterValidPassword(std::string password)
+	void enterValidPassword(std::string &password, bool isUpdate)
 	{
 		while (true)
 		{
 			std::cout << TABULATION << "Enter your password: ";
 			std::getline(std::cin, password);
 
-			std::string errorMsg = validatePassword(password);
-			if (errorMsg == "")
+			std::string errorMsg = validatePassword(password, isUpdate);
+
+			if (errorMsg.empty())
 			{
-				return password;
+				return;
 			}
-			std::cout << errorMsg << std::endl;
+			tools::colorRed();
+			std::cout << TABULATION << errorMsg << std::endl;
+			tools::resetColor();
 		}
 	}
 
-	char enterValidType(const char types[], size_t typeSize, std::string errorMsg)
+	void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string &type, bool isUpdate)
 	{
-		char type;
 		while (true)
 		{
-			std::cin >> type;
+			std::getline(std::cin, type);
+
+			if (isUpdate && type.empty())
+			{
+				return;
+			}
 
 			for (size_t i = 0; i < typeSize; i++)
 			{
 				if (type == types[i])
 				{
-					return type;
+					return;
 				}
 			}
 
-			std::cout << errorMsg;
-		}
-	} 
-
-	std::string enterValidType(const std::string types[], size_t typeSize, std::string errorMsg)
-	{
-		std::string type;
-		while (true)
-		{
-			std::cin >> type;
-
-			for (size_t i = 0; i < typeSize; i++)
-			{
-				if (type == types[i])
-				{
-					return type;
-				}
-			}
-
-			std::cout << errorMsg;
+			tools::colorRed();
+			std::cout << TABULATION << errorMsg << std::endl;
+			tools::resetColor();
 		}
 	}
 
@@ -446,15 +488,15 @@ namespace bll
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
 
-		if (dailySummary.id == "")
+		if (dailySummary.id.empty())
 		{
-			dailySummary = createDailySummary(user, dal::getGoalById(user.goal_id));
+			dailySummary = createDailySummary(user, dal::getGoalById(user.goalId));
 		}
-		if (dailySummary.id != "")
+		if (!dailySummary.id.empty())
 		{
-			int consumedCalories = std::stoi(dailySummary.calories_consumed);
+			int consumedCalories = std::stoi(dailySummary.caloriesConsumed);
 			consumedCalories += std::stoi(meal.calories);
-			dailySummary.calories_consumed = std::to_string(consumedCalories);
+			dailySummary.caloriesConsumed = std::to_string(consumedCalories);
 
 			int consumedProtein = std::stoi(dailySummary.protein);
 			consumedProtein += std::stoi(meal.protein);
@@ -468,8 +510,8 @@ namespace bll
 			consumedCarbohydrates += std::stoi(meal.carbohydrates);
 			dailySummary.carbohydrates = std::to_string(consumedCarbohydrates);
 
-			int balance = std::stoi(dailySummary.calories_consumed) - std::stoi(dailySummary.calories_burned);
-			dailySummary.calorie_balance = std::to_string(balance);
+			int balance = std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned);
+			dailySummary.calorieBalance = std::to_string(balance);
 
 			dal::updateOrDeleteDailySummary(dailySummary, true);
 		}
@@ -479,7 +521,7 @@ namespace bll
 	{
 		Meal meal;
 		meal.id = tools::generateGUID();
-		meal.created_by = user.id;
+		meal.createdBy = user.id;
 		std::cout << TABULATION << "Enter the name of the meal: ";
 		std::getline(std::cin, meal.name);
 		std::cout << TABULATION << "Enter the calories of the meal: ";
@@ -491,7 +533,7 @@ namespace bll
 		std::cout << TABULATION << "Enter the carbohydrates content of the meal: ";
 		std::getline(std::cin, meal.carbohydrates);
 		 
-		meal.created_on = tools::getDatetime("%d.%m.%Y %T");
+		meal.createdOn = tools::getDatetime("%d.%m.%Y %T");
 		meal.date = tools::getDatetime("%d.%m.%Y", days);
 		dal::writeDataToMealsFile(meal);
 
@@ -502,18 +544,18 @@ namespace bll
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
 
-		if (dailySummary.id == "")
+		if (dailySummary.id.empty())
 		{
-			dailySummary = createDailySummary(user, dal::getGoalById(user.goal_id));
+			dailySummary = createDailySummary(user, dal::getGoalById(user.goalId));
 		}
-		if (dailySummary.id != "")
+		if (!dailySummary.id.empty())
 		{
-			int burnedCalories = std::stoi(dailySummary.calories_burned);
-			burnedCalories += std::stoi(workout.calories_burned);
-			dailySummary.calories_burned = std::to_string(burnedCalories);
+			int burnedCalories = std::stoi(dailySummary.caloriesBurned);
+			burnedCalories += std::stoi(workout.caloriesBurned);
+			dailySummary.caloriesBurned = std::to_string(burnedCalories);
 
-			int balance = std::stoi(dailySummary.calories_consumed) - std::stoi(dailySummary.calories_burned);
-			dailySummary.calorie_balance = std::to_string(balance);
+			int balance = std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned);
+			dailySummary.calorieBalance = std::to_string(balance);
 
 			dal::updateOrDeleteDailySummary(dailySummary, true);
 		}
@@ -523,22 +565,20 @@ namespace bll
 	{
 		Workout workout;
 		workout.id = tools::generateGUID();
-		workout.created_by = user.id;
+		workout.createdBy = user.id;
 		std::cout << TABULATION << "Enter the name of the workout: ";
 		std::getline(std::cin, workout.name);
 		std::cout << TABULATION << "Enter the calories burned during the workout: ";
-		std::getline(std::cin, workout.calories_burned);
-		workout.created_on = tools::getDatetime("%d.%m.%Y %T");
+		std::getline(std::cin, workout.caloriesBurned);
+		workout.createdOn = tools::getDatetime("%d.%m.%Y %T");
 		workout.date = tools::getDatetime("%d.%m.%Y", days);
 		dal::writeDataToWorkoutsFile(workout);
 
 		updateDailySummaryWorkout(workout, user, days);
 	}
 
-	void getGoalForUser(std::string goalId)
+	void getGoalForUser(std::string goalId, Goal& goal)
 	{
-		Goal goal = dal::getGoalById(goalId);
-
 		tools::colorYellow();
 		std::cout << std::endl << TABULATION << "GOAL" << std::endl;
 
@@ -555,12 +595,12 @@ namespace bll
 		int spaces = CELL_WIDTH - goal.type.length();
 		for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-		std::cout << goal.weekly_change;
-		spaces = CELL_WIDTH - goal.weekly_change.length();
+		std::cout << goal.weeklyChange;
+		spaces = CELL_WIDTH - goal.weeklyChange.length();
 		for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-		std::cout << goal.calorie_adjustment;
-		spaces = CELL_WIDTH - goal.calorie_adjustment.length();
+		std::cout << goal.calorieAdjustment;
+		spaces = CELL_WIDTH - goal.calorieAdjustment.length();
 		for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
 		std::cout << "\n" << TABULATION << std::string(CELL_WIDTH * 3, '-') << "\n";
@@ -612,8 +652,8 @@ namespace bll
 			spaces = CELL_WIDTH - meal.carbohydrates.length() - 2;
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-			std::cout << meal.created_on;
-			spaces = CELL_WIDTH - meal.created_on.length();
+			std::cout << meal.createdOn;
+			spaces = CELL_WIDTH - meal.createdOn.length();
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
 			std::cout << '\n';
@@ -627,10 +667,10 @@ namespace bll
 	void getWorkoutForUser(std::string userId, std::string workoutId)
 	{
 		Workout workout = dal::getWorkoutById(workoutId);
-		if (workout.created_by == userId)
+		if (workout.createdBy == userId)
 		{
 			std::cout << TABULATION << "Name: " << workout.name << std::endl;
-			std::cout << TABULATION << "Calories Burned: " << workout.calories_burned << std::endl;
+			std::cout << TABULATION << "Calories Burned: " << workout.caloriesBurned << std::endl;
 		}
 	}
 
@@ -661,12 +701,12 @@ namespace bll
 			spaces = CELL_WIDTH - workout.name.length();
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-			std::cout << workout.calories_burned << " kcal";
-			spaces = CELL_WIDTH - workout.calories_burned.length() - 5;
+			std::cout << workout.caloriesBurned << " kcal";
+			spaces = CELL_WIDTH - workout.caloriesBurned.length() - 5;
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
-			std::cout << workout.created_on;
-			spaces = CELL_WIDTH - workout.created_on.length();
+			std::cout << workout.createdOn;
+			spaces = CELL_WIDTH - workout.createdOn.length();
 			for (int i = 0; i < spaces; ++i) std::cout << ' ';
 
 			std::cout << '\n';
@@ -689,7 +729,30 @@ namespace bll
 	void printWorkoutData(Workout workout)
 	{
 		std::cout << TABULATION << "Name: " << workout.name << std::endl;
-		std::cout << TABULATION << "Calories Burned: " << workout.calories_burned << std::endl;
+		std::cout << TABULATION << "Calories Burned: " << workout.caloriesBurned << std::endl;
+	}
+
+	void printGoalData(Goal goal)
+	{
+		std::cout << TABULATION << "Type: " << goal.type << std::endl;
+		std::cout << TABULATION << "Weekly Change: " << goal.weeklyChange << std::endl;
+		std::cout << TABULATION << "Calorie Adjustment: " << goal.calorieAdjustment << std::endl;
+	}
+
+	void printUserData(User user)
+	{
+		std::cout << TABULATION << "First Name: " << user.firstName << std::endl;
+		std::cout << TABULATION << "Last Name: " << user.lastName << std::endl;
+		std::cout << TABULATION << "Age: " << user.age << std::endl;
+		std::cout << TABULATION << "Gender: " << user.gender << std::endl;
+		std::cout << TABULATION << "Height: " << user.height << std::endl;
+		std::cout << TABULATION << "Weight: " << user.weight << std::endl;
+		std::cout << TABULATION << "Activity Level: " << user.activityLevel << tools::getActivityLevel(user.activityLevel) << std::endl;
+		std::cout << TABULATION << "Type: " << user.type << std::endl;
+		std::cout << TABULATION << "Username: " << user.username << std::endl << std::endl;
+		std::cout << TABULATION << "GOAL" << std::endl;
+
+		printGoalData(dal::getGoalById(user.goalId));
 	}
 
 	void updateMealForUser(User user, Meal meal, DailySummary dailySummary)
@@ -713,7 +776,7 @@ namespace bll
 		std::cout << TABULATION << "Enter the carbohydrates content of the meal: ";
 		std::getline(std::cin, carbohydrates);
 
-		dailySummary.calories_consumed = std::to_string(std::stoi(dailySummary.calories_consumed) - std::stoi(meal.calories));
+		dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(meal.calories));
 		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) - std::stoi(meal.protein));
 		dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) - std::stoi(meal.fat));
 		dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) - std::stoi(meal.carbohydrates));
@@ -724,11 +787,11 @@ namespace bll
 		meal.fat = (fat.empty()) ? meal.fat : fat;
 		meal.carbohydrates = (carbohydrates.empty()) ? meal.carbohydrates : carbohydrates;
 
-		dailySummary.calories_consumed = std::to_string(std::stoi(dailySummary.calories_consumed) + std::stoi(meal.calories));
+		dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) + std::stoi(meal.calories));
 		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) + std::stoi(meal.protein));
 		dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) + std::stoi(meal.fat));
 		dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) + std::stoi(meal.carbohydrates));
-		dailySummary.calorie_balance = std::to_string(std::stoi(dailySummary.calories_consumed) - std::stoi(dailySummary.calories_burned));
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
 
 		dal::updateOrDeleteMeal(meal, true);
 		dal::updateOrDeleteDailySummary(dailySummary, true);
@@ -749,16 +812,28 @@ namespace bll
 		std::cout << TABULATION << "Enter the calories burned during the workout: ";
 		std::getline(std::cin, caloriesBurned);
 
-		dailySummary.calories_burned = std::to_string(std::stoi(dailySummary.calories_burned) - std::stoi(workout.calories_burned));
+		dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) - std::stoi(workout.caloriesBurned));
 
 		workout.name = (name.empty()) ? workout.name : name;
-		workout.calories_burned = (caloriesBurned.empty()) ? workout.calories_burned : caloriesBurned;
+		workout.caloriesBurned = (caloriesBurned.empty()) ? workout.caloriesBurned : caloriesBurned;
 
-		dailySummary.calories_burned = std::to_string(std::stoi(dailySummary.calories_burned) + std::stoi(workout.calories_burned));
-		dailySummary.calorie_balance = std::to_string(std::stoi(dailySummary.calories_consumed) - std::stoi(dailySummary.calories_burned));
+		dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) + std::stoi(workout.caloriesBurned));
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
 
 		dal::updateOrDeleteWorkout(workout, true);
 		dal::updateOrDeleteDailySummary(dailySummary, true);
+	}
+
+	void updateUser(User& user, Goal& goal)
+	{
+		printUserData(user);
+
+		tools::colorRed();
+		std::cout << std::endl;
+		std::cout << TABULATION << "If ypu want to update data type new data, otherwise leve the input empty!\n";
+		tools::resetColor();
+
+		enterUserData(user, goal, true);
 	}
 
 	double calculateBMR(User user)
@@ -773,23 +848,23 @@ namespace bll
 			bmr = BMR_CONSTANT_WOMEN + (BMR_WEIGHT_MULTIPLIER_WOMEN * std::stoi(user.weight)) + (BMR_HEIGHT_MULTIPLIER_WOMEN * std::stoi(user.height)) - (BMR_AGE_MULTIPLIER_WOMEN * std::stoi(user.age));
 		}
 
-		if (user.activity_level == "1")
+		if (user.activityLevel == "1")
 		{
 			bmr *= ACTIVITY_VERY_ACTIVE;
 		}
-		else if (user.activity_level == "2")
+		else if (user.activityLevel == "2")
 		{
 			bmr *= ACTIVITY_ACTIVE;
 		}
-		else if (user.activity_level == "3")
+		else if (user.activityLevel == "3")
 		{
 			bmr *= ACTIVITY_MODERATE;
 		}
-		else if (user.activity_level == "4")
+		else if (user.activityLevel == "4")
 		{
 			bmr *= ACTIVITY_LIGHT;
 		}
-		else if (user.activity_level == "5")
+		else if (user.activityLevel == "5")
 		{
 			bmr *= ACTIVITY_SEDENTARY;
 		}
@@ -799,7 +874,7 @@ namespace bll
 
 	int calculateGoalCalories(User user, std::string goalType, unsigned calorieAdjustment)
 	{
-		Goal goal = dal::getGoalById(user.goal_id);
+		Goal goal = dal::getGoalById(user.goalId);
 		double bmr = calculateBMR(user);
 		int goalCalories = 0;
 
@@ -824,18 +899,30 @@ namespace bll
 		DailySummary dailySummary;
 
 		dailySummary.id = tools::generateGUID();
-		dailySummary.user_id = user.id;
-		dailySummary.calories_consumed = "0";
-		dailySummary.calories_burned = "0";
-		dailySummary.calorie_balance = "0";
+		dailySummary.userId = user.id;
+		dailySummary.caloriesConsumed = "0";
+		dailySummary.caloriesBurned = "0";
+		dailySummary.calorieBalance = "0";
 		dailySummary.protein = "0";
 		dailySummary.fat = "0";
 		dailySummary.carbohydrates = "0";
-		dailySummary.recommended_calories = std::to_string(calculateGoalCalories(user, goal.type, std::stoi(goal.calorie_adjustment)));
+		dailySummary.recommendedCalories = std::to_string(calculateGoalCalories(user, goal.type, std::stoi(goal.calorieAdjustment)));
 		dailySummary.date = tools::getDatetime("%d.%m.%Y", days);
-		dailySummary.created_on = tools::getDatetime("%d.%m.%Y %T");
+		dailySummary.createdOn = tools::getDatetime("%d.%m.%Y %T");
 		dal::writeDataToDailySummariesFile(dailySummary);
 
 		return dailySummary;
 	} 
+
+	void updateDailySummary(User user, Goal goal)
+	{
+		std::vector<DailySummary> dailySummaries = dal::getDailySummariesByUserId(user.id);
+		std::string caloriesAdj = std::to_string(calculateGoalCalories(user, goal.type, std::stoi(goal.calorieAdjustment)));
+
+		for (DailySummary dailySummary : dailySummaries)
+		{ 
+			dailySummary.recommendedCalories = caloriesAdj;
+			dal::updateOrDeleteDailySummary(dailySummary, true);
+		}
+	}
 }

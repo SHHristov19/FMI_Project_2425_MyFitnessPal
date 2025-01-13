@@ -189,4 +189,21 @@ namespace tools
 
 		return line;
 	}
+
+    std::string getActivityLevel(std::string level)
+    {
+        switch (level[0])
+        {
+        case '1':
+            return ". VeryActive (6-7 days of training and very active daily life)";
+        case '2':
+            return ". ActiveJob (3-5 days of training and active daily life)";
+        case '3':
+            return ". ModerateActivity (1-3 days of training and moderately active daily life)";
+        case '4':
+            return ". LightActivity (Light exercise or sports 1-3 days a week)";
+        case '5':
+            return ". SedentaryJob (Little or no exercise, desk job)";
+        }
+    }
 }

@@ -1,22 +1,20 @@
 #pragma once
-#include <string>
-#include <ctime>
 
 struct User
 {
     std::string id;
-    std::string first_name;
-    std::string last_name;
-    std::string age;
-    std::string gender;
+    std::string firstName;
+    std::string lastName;
+    std::string age; 
+	std::string gender; // e.g., "M", "F"
     std::string height; // in cm
     std::string weight; // in kg
-    std::string activity_level; // e.g., 1-5 scale from ActivityLevel struct
-    std::string goal_id; // foreign key to Goals
+    std::string activityLevel; // e.g., 1-5 scale from ActivityLevel struct
+    std::string goalId; // foreign key to Goals
     std::string username;
     std::string password;
     std::string type; // e.g., "Standart", "Premium"
-    std::string created_on;
+    std::string createdOn;
 };
 
 // Struct for Goals
@@ -24,8 +22,8 @@ struct Goal
 {
     std::string id;
     std::string type;
-    std::string weekly_change; // e.g., in kg per week = 0.25, 0.50, 0.75, 1.00
-    std::string calorie_adjustment; // in kcal
+    std::string weeklyChange; // e.g., in kg per week = 0.25, 0.50, 0.75, 1.00
+    std::string calorieAdjustment; // in kcal
 };
 
 struct Meal 
@@ -36,8 +34,8 @@ struct Meal
 	std::string protein; // in grams
 	std::string fat; // in grams
 	std::string carbohydrates; // in grams
-    std::string created_by; // foreign key to Users
-    std::string created_on;
+    std::string createdBy; // foreign key to Users
+    std::string createdOn;
     std::string date;
 };
 
@@ -45,33 +43,33 @@ struct Workout
 {
     std::string id;
     std::string name;
-    std::string calories_burned; // in kcal
-    std::string created_by; // foreign key to Users
-    std::string created_on;
+    std::string caloriesBurned; // in kcal
+    std::string createdBy; // foreign key to Users
+    std::string createdOn;
 	std::string date;
 };
 
 struct DailySummary 
 {
     std::string id;
-    std::string user_id; // foreign key to Users
+    std::string userId; // foreign key to Users
     std::string date; // represents the day
-    std::string calories_consumed; // in kcal
-    std::string calories_burned; // in kcal
-    std::string recommended_calories; // in kcal
-    std::string calorie_balance; // (calories_consumed - calories_burned)
+    std::string caloriesConsumed; // in kcal
+    std::string caloriesBurned; // in kcal
+    std::string recommendedCalories; // in kcal
+    std::string calorieBalance; // (calories_consumed - calories_burned)
 	std::string protein; // in grams
 	std::string fat; // in grams
 	std::string carbohydrates; // in grams
-	std::string created_on;
+	std::string createdOn;
 };
 
 struct MacronutrientRatio 
 {
     std::string id;
-    std::string goal_id; // foreign key to Goals
-    std::string protein_ratio; // as percentage (0-100)
-    std::string fat_ratio; // as percentage (0-100)
-    std::string carbohydrate_ratio; // as percentage (0-100)
-	std::string created_on;
+    std::string goalId; // foreign key to Goals
+    std::string proteinRatio; // as percentage (0-100)
+    std::string fatRatio; // as percentage (0-100)
+    std::string carbohydrateRatio; // as percentage (0-100)
+	std::string createdOn;
 };

@@ -34,18 +34,18 @@ namespace dal
 
 			// Parse each field separated by a comma
 			readProperty(line, start, end, user.id);
-			readProperty(line, start, end, user.first_name);
-			readProperty(line, start, end, user.last_name);
+			readProperty(line, start, end, user.firstName);
+			readProperty(line, start, end, user.lastName);
 			readProperty(line, start, end, user.age);
 			readProperty(line, start, end, user.gender);
 			readProperty(line, start, end, user.height);
 			readProperty(line, start, end, user.weight);
-			readProperty(line, start, end, user.activity_level);
-			readProperty(line, start, end, user.goal_id);
+			readProperty(line, start, end, user.activityLevel);
+			readProperty(line, start, end, user.goalId);
 			readProperty(line, start, end, user.username);
 			readProperty(line, start, end, user.password);
 			readProperty(line, start, end, user.type);
-			readProperty(line, start, end, user.created_on);
+			readProperty(line, start, end, user.createdOn);
 
 			// Add the user to the vector
 			users.push_back(user);
@@ -61,18 +61,18 @@ namespace dal
 		if (out.is_open())
 		{
 			out << user.id << ","
-				<< user.first_name << ","
-				<< user.last_name << ","
+				<< user.firstName << ","
+				<< user.lastName << ","
 				<< user.age << ","
 				<< user.gender << ","
 				<< user.height << ","
 				<< user.weight << ","
-				<< user.activity_level << ","
-				<< user.goal_id << ","
+				<< user.activityLevel << ","
+				<< user.goalId << ","
 				<< user.username << ","
 				<< user.password << ","
 				<< user.type << ","
-				<< user.created_on << "\n";
+				<< user.createdOn << "\n";
 
 			out.close();
 		}
@@ -121,35 +121,35 @@ namespace dal
 					if (isUpdate)
 					{
 						out << user.id << ","
-							<< user.first_name << ","
-							<< user.last_name << ","
+							<< user.firstName << ","
+							<< user.lastName << ","
 							<< user.age << ","
 							<< user.gender << ","
 							<< user.height << ","
 							<< user.weight << ","
-							<< user.activity_level << ","
-							<< user.goal_id << ","
+							<< user.activityLevel << ","
+							<< user.goalId << ","
 							<< user.username << ","
 							<< user.password << ","
 							<< user.type << ","
-							<< user.created_on << "\n";
+							<< user.createdOn << "\n";
 					}
 				}
 				else
 				{
 					out << updatedUser.id << ","
-						<< updatedUser.first_name << ","
-						<< updatedUser.last_name << ","
+						<< updatedUser.firstName << ","
+						<< updatedUser.lastName << ","
 						<< updatedUser.age << ","
 						<< updatedUser.gender << ","
 						<< updatedUser.height << ","
 						<< updatedUser.weight << ","
-						<< updatedUser.activity_level << ","
-						<< updatedUser.goal_id << ","
+						<< updatedUser.activityLevel << ","
+						<< updatedUser.goalId << ","
 						<< updatedUser.username << ","
 						<< updatedUser.password << ","
 						<< updatedUser.type << ","
-						<< updatedUser.created_on << "\n";
+						<< updatedUser.createdOn << "\n";
 				}
 			}
 		}
@@ -183,8 +183,8 @@ namespace dal
 			// Parse each field separated by a comma
 			readProperty(line, start, end, goal.id);
 			readProperty(line, start, end, goal.type);
-			readProperty(line, start, end, goal.weekly_change);
-			readProperty(line, start, end, goal.calorie_adjustment);
+			readProperty(line, start, end, goal.weeklyChange);
+			readProperty(line, start, end, goal.calorieAdjustment);
 
 			// Add the goal to the vector
 			goals.push_back(goal);
@@ -202,8 +202,8 @@ namespace dal
 		{
 			out << goal.id << ","
 				<< goal.type << ","
-				<< goal.weekly_change << ","
-				<< goal.calorie_adjustment << "\n";
+				<< goal.weeklyChange << ","
+				<< goal.calorieAdjustment << "\n";
 
 			out.close();
 		}
@@ -232,7 +232,7 @@ namespace dal
 
 		for (Goal goal : goals)
 		{
-			if (goal.id == user.goal_id)
+			if (goal.id == user.goalId)
 			{
 				result.push_back(goal);
 			}
@@ -257,16 +257,16 @@ namespace dal
 					{
 						out << goal.id << ","
 							<< goal.type << ","
-							<< goal.weekly_change << ","
-							<< goal.calorie_adjustment << "\n";
+							<< goal.weeklyChange << ","
+							<< goal.calorieAdjustment << "\n";
 					}
 				}
 				else
 				{
 					out << updatedGoal.id << ","
 						<< updatedGoal.type << ","
-						<< updatedGoal.weekly_change << ","
-						<< updatedGoal.calorie_adjustment << "\n";
+						<< updatedGoal.weeklyChange << ","
+						<< updatedGoal.calorieAdjustment << "\n";
 				}
 			}
 		}
@@ -305,8 +305,8 @@ namespace dal
 			readProperty(line, start, end, meal.protein);
 			readProperty(line, start, end, meal.fat);
 			readProperty(line, start, end, meal.carbohydrates);
-			readProperty(line, start, end, meal.created_by);
-			readProperty(line, start, end, meal.created_on);
+			readProperty(line, start, end, meal.createdBy);
+			readProperty(line, start, end, meal.createdOn);
 			readProperty(line, start, end, meal.date);
 
 			// Add the meal to the vector
@@ -328,8 +328,8 @@ namespace dal
 				<< meal.protein << ","
 				<< meal.fat << ","
 				<< meal.carbohydrates << ","
-				<< meal.created_by << ","
-				<< meal.created_on << ","
+				<< meal.createdBy << ","
+				<< meal.createdOn << ","
 				<< meal.date << "\n";
 
 			out.close();
@@ -358,7 +358,7 @@ namespace dal
 
 		for (Meal meal : meals)
 		{
-			if (meal.created_by == id && ((forToday) ? meal.date == tools::getDatetime("%d.%m.%Y", days) : true))
+			if (meal.createdBy == id && ((forToday) ? meal.date == tools::getDatetime("%d.%m.%Y", days) : true))
 			{
 				result.push_back(meal);
 			}
@@ -387,8 +387,8 @@ namespace dal
 							<< meal.protein << ","
 							<< meal.fat << ","
 							<< meal.carbohydrates << ","
-							<< meal.created_by << ","
-							<< meal.created_on << ","
+							<< meal.createdBy << ","
+							<< meal.createdOn << ","
 							<< meal.date << "\n";
 					}
 				}
@@ -400,8 +400,8 @@ namespace dal
 						<< updatedMeal.protein << ","
 						<< updatedMeal.fat << ","
 						<< updatedMeal.carbohydrates << ","
-						<< updatedMeal.created_by << ","
-						<< updatedMeal.created_on << ","
+						<< updatedMeal.createdBy << ","
+						<< updatedMeal.createdOn << ","
 						<< updatedMeal.date << "\n";
 				}
 			}
@@ -437,9 +437,9 @@ namespace dal
 			// Parse each field separated by a comma
 			readProperty(line, start, end, workout.id);
 			readProperty(line, start, end, workout.name);
-			readProperty(line, start, end, workout.calories_burned);
-			readProperty(line, start, end, workout.created_by);
-			readProperty(line, start, end, workout.created_on);
+			readProperty(line, start, end, workout.caloriesBurned);
+			readProperty(line, start, end, workout.createdBy);
+			readProperty(line, start, end, workout.createdOn);
 			readProperty(line, start, end, workout.date);
 
 			// Add the workout to the vector
@@ -457,9 +457,9 @@ namespace dal
 		{ 
 			out << workout.id << ","
 				<< workout.name << ","
-				<< workout.calories_burned << ","
-				<< workout.created_by << ","
-				<< workout.created_on << ","
+				<< workout.caloriesBurned << ","
+				<< workout.createdBy << ","
+				<< workout.createdOn << ","
 				<< workout.date << "\n"; 
 
 			out.close();
@@ -488,7 +488,7 @@ namespace dal
 
 		for (Workout workout : workouts)
 		{
-			if (workout.created_by == id && ((forToday) ? workout.date == tools::getDatetime("%d.%m.%Y", days) : true))
+			if (workout.createdBy == id && ((forToday) ? workout.date == tools::getDatetime("%d.%m.%Y", days) : true))
 			{
 				result.push_back(workout);
 			}
@@ -513,9 +513,9 @@ namespace dal
 					{
 						out << workout.id << ","
 							<< workout.name << ","
-							<< workout.calories_burned << ","
-							<< workout.created_by << ","
-							<< workout.created_on << ","
+							<< workout.caloriesBurned << ","
+							<< workout.createdBy << ","
+							<< workout.createdOn << ","
 							<< workout.date << "\n";
 					}
 				}
@@ -523,9 +523,9 @@ namespace dal
 				{
 					out << updatedWorkout.id << ","
 						<< updatedWorkout.name << ","
-						<< updatedWorkout.calories_burned << ","
-						<< updatedWorkout.created_by << ","
-						<< updatedWorkout.created_on << "," 
+						<< updatedWorkout.caloriesBurned << ","
+						<< updatedWorkout.createdBy << ","
+						<< updatedWorkout.createdOn << "," 
 						<< updatedWorkout.date << "\n";
 				}
 			}
@@ -559,16 +559,16 @@ namespace dal
 
 			// Parse each field separated by a comma
 			readProperty(line, start, end, dailySummary.id);
-			readProperty(line, start, end, dailySummary.user_id);
+			readProperty(line, start, end, dailySummary.userId);
 			readProperty(line, start, end, dailySummary.date);
-			readProperty(line, start, end, dailySummary.calories_consumed);
-			readProperty(line, start, end, dailySummary.calories_burned);
-			readProperty(line, start, end, dailySummary.recommended_calories);
-			readProperty(line, start, end, dailySummary.calorie_balance);
+			readProperty(line, start, end, dailySummary.caloriesConsumed);
+			readProperty(line, start, end, dailySummary.caloriesBurned);
+			readProperty(line, start, end, dailySummary.recommendedCalories);
+			readProperty(line, start, end, dailySummary.calorieBalance);
 			readProperty(line, start, end, dailySummary.protein);
 			readProperty(line, start, end, dailySummary.fat);
 			readProperty(line, start, end, dailySummary.carbohydrates);
-			readProperty(line, start, end, dailySummary.created_on);
+			readProperty(line, start, end, dailySummary.createdOn);
 
 			// Add the daily summary to the vector
 			dailySummaries.push_back(dailySummary);
@@ -584,16 +584,16 @@ namespace dal
 		if (out.is_open())
 		{
 			out << dailySummary.id << ","
-				<< dailySummary.user_id << ","
+				<< dailySummary.userId << ","
 				<< dailySummary.date << ","
-				<< dailySummary.calories_consumed << ","
-				<< dailySummary.calories_burned << ","
-				<< dailySummary.recommended_calories << ","
-				<< dailySummary.calorie_balance << ","
+				<< dailySummary.caloriesConsumed << ","
+				<< dailySummary.caloriesBurned << ","
+				<< dailySummary.recommendedCalories << ","
+				<< dailySummary.calorieBalance << ","
 				<< dailySummary.protein << ","
 				<< dailySummary.fat << ","
 				<< dailySummary.carbohydrates << ","
-				<< dailySummary.created_on << "\n";
+				<< dailySummary.createdOn << "\n";
 
 			out.close();
 		}
@@ -609,7 +609,7 @@ namespace dal
 
 		for (DailySummary dailySummary : dailySummaries)
 		{
-			if (dailySummary.user_id == id)
+			if (dailySummary.userId == id)
 			{
 				result.push_back(dailySummary);
 			}
@@ -624,7 +624,7 @@ namespace dal
 
 		for (DailySummary dailySummary : dailySummaries)
 		{
-			if (dailySummary.user_id == id && dailySummary.date == tools::getDatetime("%d.%m.%Y", days))
+			if (dailySummary.userId == id && dailySummary.date == tools::getDatetime("%d.%m.%Y", days))
 			{
 				return dailySummary;
 			}
@@ -646,31 +646,31 @@ namespace dal
 					if (isUpdate)
 					{
 						out << dailySummary.id << ","
-							<< dailySummary.user_id << ","
+							<< dailySummary.userId << ","
 							<< dailySummary.date << ","
-							<< dailySummary.calories_consumed << ","
-							<< dailySummary.calories_burned << ","
-							<< dailySummary.recommended_calories << ","
-							<< dailySummary.calorie_balance << ","
+							<< dailySummary.caloriesConsumed << ","
+							<< dailySummary.caloriesBurned << ","
+							<< dailySummary.recommendedCalories << ","
+							<< dailySummary.calorieBalance << ","
 							<< dailySummary.protein << ","
 							<< dailySummary.fat << ","
 							<< dailySummary.carbohydrates << ","
-							<< dailySummary.created_on << "\n";
+							<< dailySummary.createdOn << "\n";
 					}
 				}
 				else
 				{
 					out << updatedDailySummary.id << ","
-						<< updatedDailySummary.user_id << ","
+						<< updatedDailySummary.userId << ","
 						<< updatedDailySummary.date << ","
-						<< updatedDailySummary.calories_consumed << ","
-						<< updatedDailySummary.calories_burned << ","
-						<< updatedDailySummary.recommended_calories << ","
-						<< updatedDailySummary.calorie_balance << ","
+						<< updatedDailySummary.caloriesConsumed << ","
+						<< updatedDailySummary.caloriesBurned << ","
+						<< updatedDailySummary.recommendedCalories << ","
+						<< updatedDailySummary.calorieBalance << ","
 						<< updatedDailySummary.protein << ","
 						<< updatedDailySummary.fat << ","
 						<< updatedDailySummary.carbohydrates << ","
-						<< updatedDailySummary.created_on << "\n";
+						<< updatedDailySummary.createdOn << "\n";
 				}
 			}
 		}
@@ -703,8 +703,8 @@ namespace dal
 
 			// Parse each field separated by a comma
 			readProperty(line, start, end, macronutrientRatio.id);
-			readProperty(line, start, end, macronutrientRatio.goal_id);
-			readProperty(line, start, end, macronutrientRatio.protein_ratio);
+			readProperty(line, start, end, macronutrientRatio.goalId);
+			readProperty(line, start, end, macronutrientRatio.proteinRatio);
 
 			// Add the macronutrient ratio to the vector
 			macronutrientRatios.push_back(macronutrientRatio);
@@ -720,8 +720,8 @@ namespace dal
 		if (out.is_open())
 		{
 			out << macronutrientRatio.id << ","
-				<< macronutrientRatio.goal_id << ","
-				<< macronutrientRatio.protein_ratio << "\n";
+				<< macronutrientRatio.goalId << ","
+				<< macronutrientRatio.proteinRatio << "\n";
 
 			out.close();
 		}
@@ -738,7 +738,7 @@ namespace dal
 
 		for (MacronutrientRatio macronutrientRatio : macronutrientRatios)
 		{
-			if (macronutrientRatio.goal_id == user.goal_id)
+			if (macronutrientRatio.goalId == user.goalId)
 			{
 				result.push_back(macronutrientRatio);
 			}
@@ -762,15 +762,15 @@ namespace dal
 					if (isUpdate)
 					{
 						out << macronutrientRatio.id << ","
-							<< macronutrientRatio.goal_id << ","
-							<< macronutrientRatio.protein_ratio << "\n";
+							<< macronutrientRatio.goalId << ","
+							<< macronutrientRatio.proteinRatio << "\n";
 					}
 				}
 				else
 				{
 					out << updatedMacronutrientRatio.id << ","
-						<< updatedMacronutrientRatio.goal_id << ","
-						<< updatedMacronutrientRatio.protein_ratio << "\n";
+						<< updatedMacronutrientRatio.goalId << ","
+						<< updatedMacronutrientRatio.proteinRatio << "\n";
 				}
 			}
 		}
