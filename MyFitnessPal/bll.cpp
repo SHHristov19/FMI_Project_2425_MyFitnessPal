@@ -2,7 +2,6 @@
 
 namespace bll
 {
-	
 	void signUp()
 	{
 		User user;
@@ -362,6 +361,11 @@ namespace bll
 				tools::clearConsole();
 				pl::printAddMealTitle();
 				addMealForUser(user, days);
+			}
+			else if (input == "delete")
+			{
+				tools::clearConsole();
+				deleteAllDataForTheDay(user, dailyMeals, dailyWorkouts, dailySummary);
 			}
 			else if (input[0] == 'd')
 			{
@@ -856,6 +860,8 @@ namespace bll
 		tools::resetColor();
 
 		enterUserData(user, goal, true);
+
+
 	}
 
 	void deleteMealForUser(User user, Meal meal, DailySummary dailySummary)
@@ -920,6 +926,30 @@ namespace bll
 		dal::updateOrDeleteWorkout(workout, false);
 		dal::updateOrDeleteDailySummary(dailySummary, true);
 	}	
+
+	void deleteAllDataForTheDay(User user, std::vector<Meal> meals, std::vector<Workout> workouts, DailySummary dailySummary)
+	{
+		for (Meal meal : meals)
+		{
+			dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(meal.calories));
+			dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) - std::stoi(meal.protein));
+			dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) - std::stoi(meal.fat));
+			dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) - std::stoi(meal.carbohydrates));
+
+			dal::updateOrDeleteMeal(meal, false);
+		}
+
+		for (Workout workout : workouts)
+		{
+			dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) - std::stoi(workout.caloriesBurned));
+
+			dal::updateOrDeleteWorkout(workout, false);
+		}
+
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
+
+		dal::updateOrDeleteDailySummary(dailySummary, true);
+	}
 
 	double calculateBMR(User user)
 	{

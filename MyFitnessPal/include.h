@@ -71,6 +71,7 @@ namespace bll
 	void updateUser(User& user, Goal& goal);
 	void deleteMealForUser(User user, Meal meal, DailySummary dailySummary);
 	void deleteWorkoutForUser(User user, Workout workout, DailySummary dailySummary);
+	void deleteAllDataForTheDay(User user, std::vector<Meal> meals, std::vector<Workout> workouts, DailySummary dailySummary);
 }
 
 namespace dal
