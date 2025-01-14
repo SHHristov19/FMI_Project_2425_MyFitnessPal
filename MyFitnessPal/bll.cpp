@@ -322,9 +322,9 @@ namespace bll
 				tools::clearConsole();
 				printHelp(user);
 			}
-			else if (!input.empty() && input[0] == 'u' || input[0] == 'U')
+			else if (!input.empty() && input[0] == 'u')
 			{
-				if (input[1] == 'm' || input[1] == 'M')
+				if (input[1] == 'm')
 				{ 
 					size_t mealId = tools::getDigits(input) - 1;
                     if (mealId >= 0 && mealId <= dailyMeals.size() - 1)
@@ -334,7 +334,7 @@ namespace bll
 						updateMealForUser(user, dailyMeals[mealId], dailySummary);
 					}
 				}
-				else if (input[1] == 'w' || input[1] == 'W')
+				else if (input[1] == 'w')
 				{
 					size_t workoutId = tools::getDigits(input) - 1;
 					if (workoutId >= 0 && workoutId <= dailyWorkouts.size() - 1)
@@ -344,7 +344,7 @@ namespace bll
 						updateWorkoutForUser(user, dailyWorkouts[workoutId], dailySummary);
 					}
 				}
-				else if (input[1] == 'u' || input[1] == 'U')
+				else if (input[1] == 'u')
 				{
 					tools::clearConsole();
 					pl::printUpdateUserTitle();
@@ -362,6 +362,29 @@ namespace bll
 				tools::clearConsole();
 				pl::printAddMealTitle();
 				addMealForUser(user, days);
+			}
+			else if (input[0] == 'd')
+			{
+				if (input[1] == 'm')
+				{
+					size_t mealId = tools::getDigits(input) - 1;
+					if (mealId >= 0 && mealId <= dailyMeals.size() - 1)
+					{
+						tools::clearConsole();
+						pl::printDeleteMealTitle();
+						deleteMealForUser(user, dailyMeals[mealId], dailySummary);
+					}
+				}
+				else if (input[1] == 'w')
+				{
+					size_t workoutId = tools::getDigits(input) - 1;
+					if (workoutId >= 0 && workoutId <= dailyWorkouts.size() - 1)
+					{
+						tools::clearConsole();
+						pl::printDeleteWorkoutTitle();
+						deleteWorkoutForUser(user, dailyWorkouts[workoutId], dailySummary);
+					}
+				}
 			}
 			else if (input == "<")
 			{
@@ -834,6 +857,69 @@ namespace bll
 
 		enterUserData(user, goal, true);
 	}
+
+	void deleteMealForUser(User user, Meal meal, DailySummary dailySummary)
+	{
+		printMealData(meal);
+
+		tools::colorRed();
+		std::cout << std::endl;
+		std::cout << TABULATION << "Are you sure you want to delete this meal? (Y/N): ";
+		tools::resetColor();
+
+		while (true)
+		{
+			std::string input = tools::getInput();
+			tools::clearLine();
+			if (input == "y" || input == "yes")
+			{
+				break;
+			}
+			else if (input == "n" || input == "no")
+			{
+				return;
+			}
+		}
+
+		dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(meal.calories));
+		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) - std::stoi(meal.protein));
+		dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) - std::stoi(meal.fat));
+		dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) - std::stoi(meal.carbohydrates));
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
+
+		dal::updateOrDeleteMeal(meal, false);
+		dal::updateOrDeleteDailySummary(dailySummary, true);
+	}
+
+	void deleteWorkoutForUser(User user, Workout workout, DailySummary dailySummary)
+	{
+		printWorkoutData(workout);
+
+		tools::colorRed();
+		std::cout << std::endl;
+		std::cout << TABULATION << "Are you sure you want to delete this workout? (Y/N): ";
+		tools::resetColor();
+
+		while (true)
+		{
+			std::string input = tools::getInput();
+			tools::clearLine();
+			if (input == "y" || input == "yes")
+			{
+				break;
+			}
+			else if (input == "n" || input == "no")
+			{
+				return;
+			}
+		}
+
+		dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) - std::stoi(workout.caloriesBurned));
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
+
+		dal::updateOrDeleteWorkout(workout, false);
+		dal::updateOrDeleteDailySummary(dailySummary, true);
+	}	
 
 	double calculateBMR(User user)
 	{

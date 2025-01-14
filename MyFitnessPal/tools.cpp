@@ -175,6 +175,7 @@ namespace tools
 		}
 	}
 
+	// Gets the user input in lowercase
 	std::string getInput()
 	{
 		std::string line;

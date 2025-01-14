@@ -24,6 +24,8 @@ namespace pl
 	void printUpdateMealTitle();
 	void printUpdateWorkoutTitle();
 	void printUpdateUserTitle();
+	void printDeleteMealTitle();
+	void printDeleteWorkoutTitle();
 }
 
 namespace bll
@@ -67,6 +69,8 @@ namespace bll
 	void updateMealForUser(User user, Meal meal, DailySummary dailySummary);
 	void updateWorkoutForUser(User user, Workout workout, DailySummary dailySummary);
 	void updateUser(User& user, Goal& goal);
+	void deleteMealForUser(User user, Meal meal, DailySummary dailySummary);
+	void deleteWorkoutForUser(User user, Workout workout, DailySummary dailySummary);
 }
 
 namespace dal
