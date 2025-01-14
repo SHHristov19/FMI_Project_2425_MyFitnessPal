@@ -276,18 +276,23 @@ namespace bll
 	void printHelp(User user)
 	{
 		pl::printHelpTitle();
-
-        std::cout << "\n" << TABULATION << "To manage your meals press 'M' or 'm'" << std::endl;
-        std::cout << TABULATION << "To manage your workouts press 'W' or 'w'" << std::endl;
-        std::cout << TABULATION << "To manage your goal press 'G' or 'g'" << std::endl;
-        std::cout << TABULATION << "To see the report for the previous day press '<'" << std::endl;
-        std::cout << TABULATION << "To see the report for the next day press '>'" << std::endl;
-        std::cout << TABULATION << "To sign out press 'E' or 'e'" << std::endl;
-
 		std::cout << std::endl;
-		std::cout << TABULATION << "To go back press B/b\n";
+
+		std::cout << TABULATION << "aw or wa: Add a workout to the list.\n";
+		std::cout << TABULATION << "ma or am: Add a meal to the list.\n";
+		std::cout << TABULATION << "um<number>: Update a meal by specifying the meal number.\n";
+		std::cout << TABULATION << "uw<number>: Update a workout by specifying the workout number.\n";
+		std::cout << TABULATION << "uu: Update user details.\n";
+		std::cout << TABULATION << "dm<number>: Delete a specific meal by specifying the meal number.\n";
+		std::cout << TABULATION << "dw<number>: Delete a specific workout by specifying the workout number.\n";
+		std::cout << TABULATION << "delete: Delete all data for the current day.\n";
+		std::cout << TABULATION << "<: Move to the previous day.\n";
+		std::cout << TABULATION << ">: Move to the next day.\n";
+		std::cout << TABULATION << "e: Exit the application.\n\n";
+
 		while (true)
 		{
+			std::cout << TABULATION << "To go back press b: ";
 			std::string input = tools::getInput();
 			tools::clearLine();
 			if (input == "b")
