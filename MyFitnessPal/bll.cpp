@@ -6,14 +6,11 @@ namespace bll
 	void signUp()
 	{
 		User user;
-		ActivityLevel activityLevel;
 		Goal goal;
-		GoalType goalType; 
 		
-		pl::printSignUpTitle();
-		std::cin.ignore();
+		pl::printSignUpTitle(); 
 
-		enterUserData(user, goal);
+        enterUserData(user, goal);
 
 		mainPanel();
 	}
@@ -21,16 +18,13 @@ namespace bll
 	void enterGoalData(Goal& goal, bool isUpdate)
 	{
 		Goal newGoal;
-		std::cout << TABULATION << "1. LoseWeight" << std::endl;
-		std::cout << TABULATION << "2. MaintainWeight" << std::endl;
-		std::cout << TABULATION << "3. GainWeight" << std::endl;
-		std::cout << TABULATION << "Enter your goal type [1-3]: ";
-		enterValidType(GOAL_TYPES, 3, "Invalid input. Please enter a valid goal type [1-3]: ", newGoal.type, isUpdate);
+		tools::printGoalTypes();
+		tools::enterValidType(GOAL_TYPES, 3, "Invalid input. Please enter a valid goal type [1-3]: ", newGoal.type, "Enter your goal type [1-3]: ", isUpdate);
+
 
 		if (newGoal.type != "2")
 		{
-			std::cout << TABULATION << "Enter your weekly change [0.25, 0.5, 0.75, 1] in kg: ";
-			enterValidType(GOAL_WEEKLY_CHANGES, 4, "Invalid input. Please enter a valid weekly change [0.25, 0.5, 0.75, 1]: ", newGoal.weeklyChange, isUpdate);
+			tools::enterValidType(GOAL_WEEKLY_CHANGES, 4, "Invalid input. Please enter a valid weekly change [0.25, 0.5, 0.75, 1]: ", newGoal.weeklyChange, "Enter your weekly change [0.25, 0.5, 0.75, 1] in kg: ", isUpdate);
 
 			if (newGoal.weeklyChange == "0.25")
 			{
@@ -73,60 +67,18 @@ namespace bll
 	void enterUserData(User& user, Goal& goal, bool isUpdate)
 	{
 		User newUser;
-		std::cout << TABULATION << "Enter your first name: ";
-		std::getline(std::cin, newUser.firstName);
-		std::cout << TABULATION << "Enter your last name: ";
-		std::getline(std::cin, newUser.lastName);
-		std::cout << TABULATION << "Enter your age: ";
-		std::getline(std::cin, newUser.age);
-		while (true)
-		{
-			if (isUpdate && newUser.age.empty())
-			{
-				break;
-			}
 
-			if (std::cin.fail() || std::stoi(newUser.age) < 0 || std::stoi(newUser.age) > 100)
-			{
-				std::cin.clear();
-				tools::clearLine();
-				tools::colorRed();
-				std::cout << TABULATION << "Invalid input. Please enter a valid age." << std::endl;
-				tools::resetColor();
-				std::cin.ignore(); // Clear the input buffer
-				std::cout << TABULATION << "Enter your age: ";
-				std::getline(std::cin, newUser.age);
-			}
-			else
-			{
-				break;
-			}
-		}
-
-		std::cout << TABULATION << "Enter your gender [M/F]: ";
-		enterValidType(GENDER_TYPES, 2, "Invalid input. Please enter a valid gender [M/F]: ", newUser.gender, isUpdate);
-
-		std::cout << TABULATION << "Enter your height (in cm): ";
-		std::getline(std::cin, newUser.height);
-		std::cout << TABULATION << "Enter your weight (in kg): ";
-		std::getline(std::cin, newUser.weight);
-		std::cout << std::endl;
-
-        std::cout << TABULATION << "1. VeryActive (intense exercise or physical job)" << std::endl;
-        std::cout << TABULATION << "2. ActiveJob (walking or standing most of the day)" << std::endl;
-        std::cout << TABULATION << "3. ModerateActivity (light exercise or sports 3-5 days a week)" << std::endl;
-        std::cout << TABULATION << "4. LightActivity (office work or sitting most of the day)" << std::endl;
-        std::cout << TABULATION << "5. SedentaryJob (little or no exercise)" << std::endl;
-		std::cout << TABULATION << "Enter your activity level [1-5]: ";
-		enterValidType(ACTIVITY_LEVEL_TYPES, 5, "Invalid input. Please enter a valid activity level [1-5]: ", newUser.activityLevel, isUpdate);
-
-		std::cout << TABULATION << "Enter your type [Standard/Premium]: ";
-		enterValidType(USER_ACCOUNT_TYPE, 2, "Invalid input. Please enter a valid type [Standard/Premium]: ", newUser.type, isUpdate);
-
-		std::cout << TABULATION << "Enter your username: ";
-		std::getline(std::cin, newUser.username);
-
-		enterValidPassword(newUser.password, isUpdate);
+		tools::enterValidString(newUser.firstName, "Enter your first name: ", isUpdate);
+		tools::enterValidString(newUser.lastName, "Enter your last name: ", isUpdate);
+		tools::enterValidAge(newUser.age, "Enter your age: ", isUpdate);
+		tools::enterValidType(GENDER_TYPES, 2, "Invalid input. Please enter a valid gender [M/F]: ", newUser.gender, "Enter your gender [M/F]: ", isUpdate);
+		tools::enterValidMeasurements(newUser.height, "Enter your height (in cm): ", isUpdate);
+		tools::enterValidMeasurements(newUser.weight, "Enter your weight (in kg): ", isUpdate);
+		tools::printActivityLevels();
+		tools::enterValidType(ACTIVITY_LEVEL_TYPES, 5, "Invalid input. Please enter a valid activity level [1-5]: ", newUser.activityLevel, "Enter your activity level [1-5]: ", isUpdate);
+		tools::enterValidType(USER_ACCOUNT_TYPE, 2, "Invalid input. Please enter a valid type [Standard/Premium]: ", newUser.type, "Enter your type [Standard/Premium]: ", isUpdate);
+		tools::enterValidString(newUser.username, "Enter your username: ", isUpdate);
+		tools::enterValidPassword(newUser.password, isUpdate);
 
 		user.firstName = (newUser.firstName.empty()) ? user.firstName : newUser.firstName;
 		user.lastName = (newUser.lastName.empty()) ? user.lastName : newUser.lastName;
@@ -138,10 +90,8 @@ namespace bll
         user.type = (newUser.type.empty()) ? user.type : newUser.type;
         user.username = (newUser.username.empty()) ? user.username : newUser.username;
         user.password = (newUser.password.empty()) ? user.password : tools::passwordHash(newUser.password);
-		std::cout << std::endl;
-		enterGoalData(goal, isUpdate);
 
-		
+		enterGoalData(goal, isUpdate);
 
 		if (isUpdate)
 		{
@@ -151,7 +101,7 @@ namespace bll
 		else
 		{
 			user.id = tools::generateGUID();
-			user.createdOn = tools::getDatetime("%d.%m.%Y %T");
+			user.createdOn = tools::getDatetime(DATETIME_FORMAT);
 			user.goalId = goal.id;
 
 			dal::writeDataToUsersFile(user);
@@ -173,14 +123,13 @@ namespace bll
 			if (wrongInput)
 			{
 				tools::colorRed();
-				std::cout << TABULATION << "Invalid username or password! Try Again!";
+				std::cout << TABULATION << "Invalid username or password! Try Again!\n";
 				tools::resetColor();
 			}
 			 
-			std::cout << std::endl << TABULATION << "Enter your username: ";
-			std::getline(std::cin, username);
-			std::cout << TABULATION << "Enter your password: ";
-			std::getline(std::cin, password);
+			tools::enterValidString(username, "Enter your username: ");
+			tools::enterValidString(password, "Enter your password: ");
+
 			password = tools::passwordHash(password);
 			User findUser = dal::findUserByUsernameAndPassword(username, password);
 			if (!findUser.id.empty())
@@ -380,110 +329,6 @@ namespace bll
 		mainPanel();
 	}
 
-	std::string validatePassword(std::string password, bool isChangePassword)
-	{
-		if (isChangePassword && password.empty())
-		{
-			return std::string();
-		}
-
-		if (password.length() < 8)
-		{
-			return "Password must be at least 8 characters long!";
-		}
-
-		bool hasDigit = false;
-		bool hasLowercase = false;
-		bool hasUppercase = false;
-		bool hasSpecialCharacter = false;
-
-		for (size_t i = 0; i < password.length(); i++)
-		{
-			if (isdigit(password[i]))
-			{
-				hasDigit = true;
-			}
-			else if (islower(password[i]))
-			{
-				hasLowercase = true;
-			}
-			else if (isupper(password[i]))
-			{
-				hasUppercase = true;
-			}
-			else if (ispunct(password[i]))
-			{
-				hasSpecialCharacter = true;
-			}
-		}
-
-		if (!hasDigit)
-		{
-			return "Password must contain at least one digit!";
-		}
-
-		if (!hasLowercase)
-		{
-			return "Password must contain at least one lowercase letter!";
-		}
-
-		if (!hasUppercase)
-		{
-			return "Password must contain at least one uppercase letter!";
-		}
-
-		if (!hasSpecialCharacter)
-		{
-			return "Password must contain at least one special character!";
-		}
-		 
-        return std::string();
-	}
-
-	void enterValidPassword(std::string &password, bool isUpdate)
-	{
-		while (true)
-		{
-			std::cout << TABULATION << "Enter your password: ";
-			std::getline(std::cin, password);
-
-			std::string errorMsg = validatePassword(password, isUpdate);
-
-			if (errorMsg.empty())
-			{
-				return;
-			}
-			tools::colorRed();
-			std::cout << TABULATION << errorMsg << std::endl;
-			tools::resetColor();
-		}
-	}
-
-	void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string &type, bool isUpdate)
-	{
-		while (true)
-		{
-			std::getline(std::cin, type);
-
-			if (isUpdate && type.empty())
-			{
-				return;
-			}
-
-			for (size_t i = 0; i < typeSize; i++)
-			{
-				if (type == types[i])
-				{
-					return;
-				}
-			}
-
-			tools::colorRed();
-			std::cout << TABULATION << errorMsg << std::endl;
-			tools::resetColor();
-		}
-	}
-
 	void updateDailySummaryMeal(Meal meal, User user, int days)
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
@@ -522,19 +367,15 @@ namespace bll
 		Meal meal;
 		meal.id = tools::generateGUID();
 		meal.createdBy = user.id;
-		std::cout << TABULATION << "Enter the name of the meal: ";
-		std::getline(std::cin, meal.name);
-		std::cout << TABULATION << "Enter the calories of the meal: ";
-		std::getline(std::cin, meal.calories);
-		std::cout << TABULATION << "Enter the protein content of the meal: ";
-		std::getline(std::cin, meal.protein);
-		std::cout << TABULATION << "Enter the fat content of the meal: ";
-		std::getline(std::cin, meal.fat);
-		std::cout << TABULATION << "Enter the carbohydrates content of the meal: ";
-		std::getline(std::cin, meal.carbohydrates);
+
+		tools::enterValidString(meal.name, "Enter the name of the meal: ");
+		tools::enterValidCaloriesAndGrams(meal.calories, "Enter the calories of the meal: ");
+		tools::enterValidCaloriesAndGrams(meal.protein, "Enter the protein content of the meal: ");
+		tools::enterValidCaloriesAndGrams(meal.fat, "Enter the fat content of the meal: ");
+		tools::enterValidCaloriesAndGrams(meal.carbohydrates, "Enter the carbohydrates content of the meal: ");
 		 
-		meal.createdOn = tools::getDatetime("%d.%m.%Y %T");
-		meal.date = tools::getDatetime("%d.%m.%Y", days);
+		meal.createdOn = tools::getDatetime(DATETIME_FORMAT);
+		meal.date = tools::getDatetime(DATE_FORMAT, days);
 		dal::writeDataToMealsFile(meal);
 
 		updateDailySummaryMeal(meal, user, days);
@@ -566,12 +407,12 @@ namespace bll
 		Workout workout;
 		workout.id = tools::generateGUID();
 		workout.createdBy = user.id;
-		std::cout << TABULATION << "Enter the name of the workout: ";
-		std::getline(std::cin, workout.name);
-		std::cout << TABULATION << "Enter the calories burned during the workout: ";
-		std::getline(std::cin, workout.caloriesBurned);
-		workout.createdOn = tools::getDatetime("%d.%m.%Y %T");
-		workout.date = tools::getDatetime("%d.%m.%Y", days);
+
+		tools::enterValidString(workout.name, "Enter the name of the workout: ");
+		tools::enterValidCaloriesAndGrams(workout.caloriesBurned, "Enter the calories burned during the workout: ");
+
+		workout.createdOn = tools::getDatetime(DATETIME_FORMAT);
+		workout.date = tools::getDatetime(DATE_FORMAT, days);
 		dal::writeDataToWorkoutsFile(workout);
 
 		updateDailySummaryWorkout(workout, user, days);
@@ -758,34 +599,29 @@ namespace bll
 	void updateMealForUser(User user, Meal meal, DailySummary dailySummary)
 	{
 		printMealData(meal);
-		std::string name, calories, protein, fat, carbohydrates;
+		Meal newMeal;
 
 		tools::colorRed();
 		std::cout << std::endl;
 		std::cout << TABULATION << "If ypu want to update data type new data, otherwise leve the input empty!\n";
 		tools::resetColor();
 
-		std::cout << TABULATION << "Enter the name of the meal: ";
-		std::getline(std::cin, name);
-		std::cout << TABULATION << "Enter the calories of the meal: ";
-		std::getline(std::cin, calories);
-		std::cout << TABULATION << "Enter the protein content of the meal: ";
-		std::getline(std::cin, protein);
-		std::cout << TABULATION << "Enter the fat content of the meal: ";
-		std::getline(std::cin, fat);
-		std::cout << TABULATION << "Enter the carbohydrates content of the meal: ";
-		std::getline(std::cin, carbohydrates);
+		tools::enterValidString(newMeal.name, "Enter the name of the meal: ", true);
+		tools::enterValidCaloriesAndGrams(newMeal.calories, "Enter the calories of the meal: ", true);
+		tools::enterValidCaloriesAndGrams(newMeal.protein, "Enter the protein content of the meal: ", true);
+		tools::enterValidCaloriesAndGrams(newMeal.fat, "Enter the fat content of the meal: ", true);
+		tools::enterValidCaloriesAndGrams(newMeal.carbohydrates, "Enter the carbohydrates content of the meal: ", true);
 
 		dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(meal.calories));
 		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) - std::stoi(meal.protein));
 		dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) - std::stoi(meal.fat));
 		dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) - std::stoi(meal.carbohydrates));
 
-		meal.name = (name.empty()) ? meal.name : name;
-		meal.calories = (calories.empty()) ? meal.calories : calories;
-		meal.protein = (protein.empty()) ? meal.protein : protein;
-		meal.fat = (fat.empty()) ? meal.fat : fat;
-		meal.carbohydrates = (carbohydrates.empty()) ? meal.carbohydrates : carbohydrates;
+        meal.name = (newMeal.name.empty()) ? meal.name : newMeal.name;
+        meal.calories = (newMeal.calories.empty()) ? meal.calories : newMeal.calories;
+        meal.protein = (newMeal.protein.empty()) ? meal.protein : newMeal.protein;
+        meal.fat = (newMeal.fat.empty()) ? meal.fat : newMeal.fat;
+        meal.carbohydrates = (newMeal.carbohydrates.empty()) ? meal.carbohydrates : newMeal.carbohydrates;
 
 		dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) + std::stoi(meal.calories));
 		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) + std::stoi(meal.protein));
@@ -800,22 +636,20 @@ namespace bll
 	void updateWorkoutForUser(User user, Workout workout, DailySummary dailySummary)
 	{
 		printWorkoutData(workout);
-		std::string name, caloriesBurned;
+		Workout newWorkout;
 
 		tools::colorRed();
 		std::cout << std::endl;
 		std::cout << TABULATION << "If ypu want to update data type new data, otherwise leve the input empty!\n";
 		tools::resetColor();
 
-		std::cout << TABULATION << "Enter the name of the workout: ";
-		std::getline(std::cin, name);
-		std::cout << TABULATION << "Enter the calories burned during the workout: ";
-		std::getline(std::cin, caloriesBurned);
-
 		dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) - std::stoi(workout.caloriesBurned));
 
-		workout.name = (name.empty()) ? workout.name : name;
-		workout.caloriesBurned = (caloriesBurned.empty()) ? workout.caloriesBurned : caloriesBurned;
+		tools::enterValidString(newWorkout.name, "Enter the name of the workout: ", true);
+		tools::enterValidCaloriesAndGrams(newWorkout.caloriesBurned, "Enter the calories burned during the workout: ", true);
+
+		workout.name = (newWorkout.name.empty()) ? workout.name : newWorkout.name;
+		workout.caloriesBurned = (newWorkout.caloriesBurned.empty()) ? workout.caloriesBurned : newWorkout.caloriesBurned;
 
 		dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) + std::stoi(workout.caloriesBurned));
 		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
@@ -907,8 +741,8 @@ namespace bll
 		dailySummary.fat = "0";
 		dailySummary.carbohydrates = "0";
 		dailySummary.recommendedCalories = std::to_string(calculateGoalCalories(user, goal.type, std::stoi(goal.calorieAdjustment)));
-		dailySummary.date = tools::getDatetime("%d.%m.%Y", days);
-		dailySummary.createdOn = tools::getDatetime("%d.%m.%Y %T");
+		dailySummary.date = tools::getDatetime(DATE_FORMAT, days);
+		dailySummary.createdOn = tools::getDatetime(DATETIME_FORMAT);
 		dal::writeDataToDailySummariesFile(dailySummary);
 
 		return dailySummary;

@@ -183,3 +183,20 @@ const std::string TABULATION = "\t\t\t\t\t";
 const int NUMBER_DIGITS = 10;
 
 const int CELL_WIDTH = 20;
+
+const std::string INVALID_MSG = "Invalid input. Please try again!";
+
+// Constants for min and mas width and height
+const unsigned MIN_MEASUREMENTS = 1;
+const unsigned MAX_MEASUREMENTS = 300;
+
+// Constants for min and max age
+const unsigned MIN_AGE = 1;
+const unsigned MAX_AGE = 120;
+
+// Constants for min and max kalories and grams
+const unsigned MIN_CALORIES_GRAMS = 0;
+const unsigned MAX_CALORIES_GRAMS = 10000;
+
+const char DATE_FORMAT[] = "%d.%m.%Y";
+const char DATETIME_FORMAT[] = "%d.%m.%Y %T";

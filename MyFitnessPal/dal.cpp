@@ -358,7 +358,7 @@ namespace dal
 
 		for (Meal meal : meals)
 		{
-			if (meal.createdBy == id && ((forToday) ? meal.date == tools::getDatetime("%d.%m.%Y", days) : true))
+			if (meal.createdBy == id && ((forToday) ? meal.date == tools::getDatetime(DATE_FORMAT, days) : true))
 			{
 				result.push_back(meal);
 			}
@@ -488,7 +488,7 @@ namespace dal
 
 		for (Workout workout : workouts)
 		{
-			if (workout.createdBy == id && ((forToday) ? workout.date == tools::getDatetime("%d.%m.%Y", days) : true))
+			if (workout.createdBy == id && ((forToday) ? workout.date == tools::getDatetime(DATE_FORMAT, days) : true))
 			{
 				result.push_back(workout);
 			}
@@ -624,7 +624,7 @@ namespace dal
 
 		for (DailySummary dailySummary : dailySummaries)
 		{
-			if (dailySummary.userId == id && dailySummary.date == tools::getDatetime("%d.%m.%Y", days))
+			if (dailySummary.userId == id && dailySummary.date == tools::getDatetime(DATE_FORMAT, days))
 			{
 				return dailySummary;
 			}

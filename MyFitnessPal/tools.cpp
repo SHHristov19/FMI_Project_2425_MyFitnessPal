@@ -206,4 +206,242 @@ namespace tools
             return ". SedentaryJob (Little or no exercise, desk job)";
         }
     }
+
+	std::string validatePassword(std::string password, bool isChangePassword)
+	{
+		if (isChangePassword && password.empty())
+		{
+			return std::string();
+		}
+
+		if (password.length() < 8)
+		{
+			return "Password must be at least 8 characters long!";
+		}
+
+		bool hasDigit = false;
+		bool hasLowercase = false;
+		bool hasUppercase = false;
+		bool hasSpecialCharacter = false;
+
+		for (size_t i = 0; i < password.length(); i++)
+		{
+			if (isdigit(password[i]))
+			{
+				hasDigit = true;
+			}
+			else if (islower(password[i]))
+			{
+				hasLowercase = true;
+			}
+			else if (isupper(password[i]))
+			{
+				hasUppercase = true;
+			}
+			else if (ispunct(password[i]))
+			{
+				hasSpecialCharacter = true;
+			}
+		}
+
+		if (!hasDigit)
+		{
+			return "Password must contain at least one digit!";
+		}
+
+		if (!hasLowercase)
+		{
+			return "Password must contain at least one lowercase letter!";
+		}
+
+		if (!hasUppercase)
+		{
+			return "Password must contain at least one uppercase letter!";
+		}
+
+		if (!hasSpecialCharacter)
+		{
+			return "Password must contain at least one special character!";
+		}
+
+		return std::string();
+	}
+
+	void enterValidPassword(std::string& password, bool isUpdate)
+	{
+		while (true)
+		{
+			std::cout << TABULATION << "Enter your password: ";
+			std::getline(std::cin, password);
+
+			std::string errorMsg = validatePassword(password, isUpdate);
+
+			if (errorMsg.empty())
+			{
+				return;
+			}
+
+			std::cin.clear();
+			tools::clearLine();
+			tools::colorRed();
+			std::cout << TABULATION << errorMsg << std::endl;
+			tools::resetColor();
+		}
+	}
+
+	void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string& type, std::string msg,bool isUpdate)
+	{
+		while (true)
+		{
+			std::cout << TABULATION << msg;
+			std::getline(std::cin, type);
+
+			if (isUpdate && type.empty())
+			{
+				return;
+			}
+
+			for (size_t i = 0; i < typeSize; i++)
+			{
+				if (type == types[i])
+				{
+					return;
+				}
+			}
+
+			displayErrorAndClearLine();
+		}
+	}
+
+	void enterValidString(std::string& data, std::string msg, bool isUpdate)
+	{
+		while (true)
+		{
+			std::cout << TABULATION << msg;
+			std::getline(std::cin, data);
+
+			if (isUpdate && data.empty())
+			{
+				return;
+			}
+
+			if (std::cin.fail() || data.empty())
+			{
+				displayErrorAndClearLine();
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+
+	bool isStringOnlyDigits(std::string data)
+	{
+		for (char c : data)
+		{
+			if (!std::isdigit(c))
+			{
+				return false;
+			}
+		}
+
+		return data.empty() ? false : true;
+	}
+
+	void enterValidAge(std::string& age, std::string msg, bool isUpdate)
+	{
+		while (true)
+		{
+			std::cout << TABULATION << msg;
+			std::getline(std::cin, age);
+
+			if (isUpdate && age.empty())
+			{
+				return;
+			}
+			
+			if (std::cin.fail() || !isStringOnlyDigits(age) || std::stoi(age) < MIN_AGE || std::stoi(age) > MAX_AGE)
+			{
+				displayErrorAndClearLine();
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+
+	void enterValidMeasurements(std::string& measurements, std::string msg, bool isUpdate)
+	{
+		while (true)
+		{
+			std::cout << TABULATION << msg;
+			std::getline(std::cin, measurements);
+
+			if (isUpdate && measurements.empty())
+			{
+				return;
+			}
+
+            if (std::cin.fail() || !isStringOnlyDigits(measurements) || std::stoi(measurements) < MIN_MEASUREMENTS || std::stoi(measurements) > MAX_MEASUREMENTS)
+			{
+				displayErrorAndClearLine();
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+
+	void enterValidCaloriesAndGrams(std::string& data, std::string msg, bool isUpdate)
+	{
+		while (true)
+		{
+			std::cout << TABULATION << msg;
+			std::getline(std::cin, data);
+
+			if (isUpdate && data.empty())
+			{
+				return;
+			}
+
+			if (std::cin.fail() || !isStringOnlyDigits(data) || std::stoi(data) < MIN_CALORIES_GRAMS || std::stoi(data) > MAX_CALORIES_GRAMS)
+			{
+				displayErrorAndClearLine();
+			}
+			else
+			{
+				return;
+			}
+		}
+	}
+
+	void displayErrorAndClearLine()
+	{
+		std::cin.clear();
+		tools::clearLine();
+		tools::colorRed();
+		std::cout << TABULATION << INVALID_MSG << std::endl;
+		tools::resetColor();
+	}
+
+	void printActivityLevels()
+	{
+		std::cout << std::endl;
+		std::cout << TABULATION << "1. VeryActive (intense exercise or physical job)" << std::endl;
+		std::cout << TABULATION << "2. ActiveJob (walking or standing most of the day)" << std::endl;
+		std::cout << TABULATION << "3. ModerateActivity (light exercise or sports 3-5 days a week)" << std::endl;
+		std::cout << TABULATION << "4. LightActivity (office work or sitting most of the day)" << std::endl;
+		std::cout << TABULATION << "5. SedentaryJob (little or no exercise)" << std::endl;
+	}
+
+	void printGoalTypes()
+	{
+		std::cout << std::endl;
+		std::cout << TABULATION << "1. LoseWeight" << std::endl;
+		std::cout << TABULATION << "2. MaintainWeight" << std::endl;
+		std::cout << TABULATION << "3. GainWeight" << std::endl;
+	}
 }

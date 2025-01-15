@@ -38,10 +38,9 @@ namespace bll
 	void printDateAndWelcome(std::string firstName, std::string lastName, int days = 0);
 	DailySummary printDailySymmary(User user, int days = 0);
 
-	void enterValidPassword(std::string& password, bool isUpdate = false);
-	std::string validatePassword(std::string password, bool isChangePassword);
+	
 	void enterUserData(User& user, Goal& goal, bool isPasswordChange = false);
-	void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string& type, bool isUpdate = false);
+	
 
 	void updateDailySummaryMeal(Meal meal, User user, int days = 0);
 	void addMealForUser(User user, int days = 0);
@@ -135,4 +134,16 @@ namespace tools
 	void clearLine();
 	void toLower(std::string& data);
 	std::string getInput();
+
+	void enterValidPassword(std::string& password, bool isUpdate = false);
+	std::string validatePassword(std::string password, bool isChangePassword);
+	void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string& type, std::string msg, bool isUpdate = false);
+	void enterValidString(std::string& data, std::string msg, bool isUpdate = false);
+	void enterValidAge(std::string& age, std::string msg, bool isUpdate = false);
+	void enterValidMeasurements(std::string& measurements, std::string msg, bool isUpdate = false);
+	void enterValidCaloriesAndGrams(std::string& data, std::string msg, bool isUpdate = false);
+	void displayErrorAndClearLine();
+	void printActivityLevels();
+	void printGoalTypes();
+	bool isStringOnlyDigits(std::string data);
 }
