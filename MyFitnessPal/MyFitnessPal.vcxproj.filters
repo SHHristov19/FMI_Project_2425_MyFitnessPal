@@ -49,9 +49,6 @@
     <None Include="data\goals.csv">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="data\macronutrientRatios.csv">
-      <Filter>Resource Files</Filter>
-    </None>
     <None Include="data\meals.csv">
       <Filter>Resource Files</Filter>
     </None>

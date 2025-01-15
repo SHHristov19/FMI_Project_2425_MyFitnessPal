@@ -142,7 +142,6 @@
   <ItemGroup>
     <None Include="data\dailySummaries.csv" />
     <None Include="data\goals.csv" />
-    <None Include="data\macronutrientRatios.csv" />
     <None Include="data\meals.csv" />
     <None Include="data\users.csv" />
     <None Include="data\workouts.csv" />

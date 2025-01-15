@@ -66,10 +66,7 @@ struct DailySummary
 
 struct MacronutrientRatio 
 {
-    std::string id;
-    std::string goalId; // foreign key to Goals
-    std::string proteinRatio; // as percentage (0-100)
-    std::string fatRatio; // as percentage (0-100)
-    std::string carbohydrateRatio; // as percentage (0-100)
-	std::string createdOn;
+    std::string protein; // as percentage (0-100)
+    std::string fat; // as percentage (0-100)
+    std::string carbohydrates; // as percentage (0-100)
 };

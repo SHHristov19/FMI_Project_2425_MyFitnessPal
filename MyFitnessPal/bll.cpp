@@ -2,7 +2,6 @@
 
 namespace bll
 {
-	
 	void signUp()
 	{
 		User user;
@@ -190,10 +189,10 @@ namespace bll
 	DailySummary printDailySymmary(User user, int days)
 	{
 		DailySummary dailySummary = dal::getDailySummaryByUserIdToday(user.id, days);
+		Goal goal = dal::getGoalById(user.goalId);
 
 		if (dailySummary.id.empty())
 		{
-			Goal goal = dal::getGoalById(user.goalId);
 			if (!goal.id.empty())
 			{
 				dailySummary = createDailySummary(user, goal, days);
@@ -207,16 +206,19 @@ namespace bll
 		{
 			tools::colorCyan();
 
-			std::cout << TABULATION << "Calories Consumed: " << dailySummary.caloriesConsumed
-				<< ((user.type == "Premium") ? (TABULATION + "Protein: " + dailySummary.protein + "\n") : "\n");
+			MacronutrientRatio macronutrientRatio;
+			calculateMacronutrients(user, goal, std::stoi(dailySummary.recommendedCalories), macronutrientRatio);
 
-			std::cout << TABULATION << "Calories Burned: " << dailySummary.caloriesBurned
-				<< ((user.type == "Premium") ? (TABULATION + "Fat: " + dailySummary.fat + "\n") : "\n");
+			std::cout << "\t\t" << "Calories Consumed: " << dailySummary.caloriesConsumed << "\t\t\t" << "Protein: " + dailySummary.protein
+				<< ((user.type == "Premium") ? ("\t\t\tProtein-Ration: " + macronutrientRatio.protein + "g.\n") : "\n");
 
-			std::cout << TABULATION << "Recommended Calories: " << dailySummary.recommendedCalories
-				<< ((user.type == "Premium") ? (TABULATION.substr(1) + "Carbohydrates: " + dailySummary.carbohydrates + "\n") : "\n");
+			std::cout << "\t\t" << "Calories Burned: " << dailySummary.caloriesBurned << "\t\t\t" << "Fat: " + dailySummary.fat
+				<< ((user.type == "Premium") ? ("\t\t\t\tFat-Ratio: " + macronutrientRatio.fat + "g.\n") : "\n");
 
-			std::cout << TABULATION << "Calorie Balance: " << dailySummary.calorieBalance << "\n\n";
+			std::cout << "\t\t" << "Recommended Calories: " << dailySummary.recommendedCalories << "\t\t" << "Carbohydrates: " + dailySummary.carbohydrates
+				<< ((user.type == "Premium") ? ("\t\tCarbohydrates-Ratio: " + macronutrientRatio.carbohydrates + "g.\n") : "\n");
+
+			std::cout << "\t\t" << "Calorie Balance: " << dailySummary.calorieBalance << "\n\n";
 
 			tools::resetColor();
 		}
@@ -227,18 +229,23 @@ namespace bll
 	void printHelp(User user)
 	{
 		pl::printHelpTitle();
-
-        std::cout << "\n" << TABULATION << "To manage your meals press 'M' or 'm'" << std::endl;
-        std::cout << TABULATION << "To manage your workouts press 'W' or 'w'" << std::endl;
-        std::cout << TABULATION << "To manage your goal press 'G' or 'g'" << std::endl;
-        std::cout << TABULATION << "To see the report for the previous day press '<'" << std::endl;
-        std::cout << TABULATION << "To see the report for the next day press '>'" << std::endl;
-        std::cout << TABULATION << "To sign out press 'E' or 'e'" << std::endl;
-
 		std::cout << std::endl;
-		std::cout << TABULATION << "To go back press B/b\n";
+
+		std::cout << TABULATION << "aw or wa: Add a workout to the list.\n";
+		std::cout << TABULATION << "ma or am: Add a meal to the list.\n";
+		std::cout << TABULATION << "um<number>: Update a meal by specifying the meal number.\n";
+		std::cout << TABULATION << "uw<number>: Update a workout by specifying the workout number.\n";
+		std::cout << TABULATION << "uu: Update user details.\n";
+		std::cout << TABULATION << "dm<number>: Delete a specific meal by specifying the meal number.\n";
+		std::cout << TABULATION << "dw<number>: Delete a specific workout by specifying the workout number.\n";
+		std::cout << TABULATION << "delete: Delete all data for the current day.\n";
+		std::cout << TABULATION << "<: Move to the previous day.\n";
+		std::cout << TABULATION << ">: Move to the next day.\n";
+		std::cout << TABULATION << "e: Exit the application.\n\n";
+
 		while (true)
 		{
+			std::cout << TABULATION << "To go back press b: ";
 			std::string input = tools::getInput();
 			tools::clearLine();
 			if (input == "b")
@@ -272,9 +279,9 @@ namespace bll
 				tools::clearConsole();
 				printHelp(user);
 			}
-			else if (!input.empty() && input[0] == 'u' || input[0] == 'U')
+			else if (!input.empty() && input[0] == 'u')
 			{
-				if (input[1] == 'm' || input[1] == 'M')
+				if (input[1] == 'm')
 				{ 
 					size_t mealId = tools::getDigits(input) - 1;
                     if (mealId >= 0 && mealId <= dailyMeals.size() - 1)
@@ -284,7 +291,7 @@ namespace bll
 						updateMealForUser(user, dailyMeals[mealId], dailySummary);
 					}
 				}
-				else if (input[1] == 'w' || input[1] == 'W')
+				else if (input[1] == 'w')
 				{
 					size_t workoutId = tools::getDigits(input) - 1;
 					if (workoutId >= 0 && workoutId <= dailyWorkouts.size() - 1)
@@ -294,7 +301,7 @@ namespace bll
 						updateWorkoutForUser(user, dailyWorkouts[workoutId], dailySummary);
 					}
 				}
-				else if (input[1] == 'u' || input[1] == 'U')
+				else if (input[1] == 'u')
 				{
 					tools::clearConsole();
 					pl::printUpdateUserTitle();
@@ -312,6 +319,34 @@ namespace bll
 				tools::clearConsole();
 				pl::printAddMealTitle();
 				addMealForUser(user, days);
+			}
+			else if (input == "delete")
+			{
+				tools::clearConsole();
+				deleteAllDataForTheDay(user, dailyMeals, dailyWorkouts, dailySummary);
+			}
+			else if (input[0] == 'd')
+			{
+				if (input[1] == 'm')
+				{
+					size_t mealId = tools::getDigits(input) - 1;
+					if (mealId >= 0 && mealId <= dailyMeals.size() - 1)
+					{
+						tools::clearConsole();
+						pl::printDeleteMealTitle();
+						deleteMealForUser(user, dailyMeals[mealId], dailySummary);
+					}
+				}
+				else if (input[1] == 'w')
+				{
+					size_t workoutId = tools::getDigits(input) - 1;
+					if (workoutId >= 0 && workoutId <= dailyWorkouts.size() - 1)
+					{
+						tools::clearConsole();
+						pl::printDeleteWorkoutTitle();
+						deleteWorkoutForUser(user, dailyWorkouts[workoutId], dailySummary);
+					}
+				}
 			}
 			else if (input == "<")
 			{
@@ -668,6 +703,95 @@ namespace bll
 		tools::resetColor();
 
 		enterUserData(user, goal, true);
+
+
+	}
+
+	void deleteMealForUser(User user, Meal meal, DailySummary dailySummary)
+	{
+		printMealData(meal);
+
+		tools::colorRed();
+		std::cout << std::endl;
+		std::cout << TABULATION << "Are you sure you want to delete this meal? (Y/N): ";
+		tools::resetColor();
+
+		while (true)
+		{
+			std::string input = tools::getInput();
+			tools::clearLine();
+			if (input == "y" || input == "yes")
+			{
+				break;
+			}
+			else if (input == "n" || input == "no")
+			{
+				return;
+			}
+		}
+
+		dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(meal.calories));
+		dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) - std::stoi(meal.protein));
+		dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) - std::stoi(meal.fat));
+		dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) - std::stoi(meal.carbohydrates));
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
+
+		dal::updateOrDeleteMeal(meal, false);
+		dal::updateOrDeleteDailySummary(dailySummary, true);
+	}
+
+	void deleteWorkoutForUser(User user, Workout workout, DailySummary dailySummary)
+	{
+		printWorkoutData(workout);
+
+		tools::colorRed();
+		std::cout << std::endl;
+		std::cout << TABULATION << "Are you sure you want to delete this workout? (Y/N): ";
+		tools::resetColor();
+
+		while (true)
+		{
+			std::string input = tools::getInput();
+			tools::clearLine();
+			if (input == "y" || input == "yes")
+			{
+				break;
+			}
+			else if (input == "n" || input == "no")
+			{
+				return;
+			}
+		}
+
+		dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) - std::stoi(workout.caloriesBurned));
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
+
+		dal::updateOrDeleteWorkout(workout, false);
+		dal::updateOrDeleteDailySummary(dailySummary, true);
+	}	
+
+	void deleteAllDataForTheDay(User user, std::vector<Meal> meals, std::vector<Workout> workouts, DailySummary dailySummary)
+	{
+		for (Meal meal : meals)
+		{
+			dailySummary.caloriesConsumed = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(meal.calories));
+			dailySummary.protein = std::to_string(std::stoi(dailySummary.protein) - std::stoi(meal.protein));
+			dailySummary.fat = std::to_string(std::stoi(dailySummary.fat) - std::stoi(meal.fat));
+			dailySummary.carbohydrates = std::to_string(std::stoi(dailySummary.carbohydrates) - std::stoi(meal.carbohydrates));
+
+			dal::updateOrDeleteMeal(meal, false);
+		}
+
+		for (Workout workout : workouts)
+		{
+			dailySummary.caloriesBurned = std::to_string(std::stoi(dailySummary.caloriesBurned) - std::stoi(workout.caloriesBurned));
+
+			dal::updateOrDeleteWorkout(workout, false);
+		}
+
+		dailySummary.calorieBalance = std::to_string(std::stoi(dailySummary.caloriesConsumed) - std::stoi(dailySummary.caloriesBurned));
+
+		dal::updateOrDeleteDailySummary(dailySummary, true);
 	}
 
 	double calculateBMR(User user)
@@ -726,6 +850,28 @@ namespace bll
 		}
 
 		return goalCalories;
+	}
+
+	void calculateMacronutrients(User user, Goal goal, int calories, MacronutrientRatio& ratio)
+	{
+		if (goal.type == "1")
+		{
+			ratio.protein = std::to_string((int)(MACRO_RATIO_LOSS_PROTEIN * calories / PROTEIN_CALORIES_PER_GRAM));
+			ratio.fat = std::to_string((int)(MACRO_RATIO_LOSS_FAT * calories / FAT_CALORIES_PER_GRAM));
+			ratio.carbohydrates = std::to_string((int)(MACRO_RATIO_LOSS_CARBOHYDRATES * calories / CARBOHYDRATE_CALORIES_PER_GRAM));
+		}
+		else if (goal.type == "2")
+		{
+			ratio.protein = std::to_string((int)(MACRO_RATIO_MAINTAIN_PROTEIN * calories / PROTEIN_CALORIES_PER_GRAM));
+			ratio.fat = std::to_string((int)(MACRO_RATIO_MAINTAIN_FAT * calories / FAT_CALORIES_PER_GRAM));
+			ratio.carbohydrates = std::to_string((int)(MACRO_RATIO_MAINTAIN_CARBOHYDRATES * calories / CARBOHYDRATE_CALORIES_PER_GRAM));
+		}
+		else if (goal.type == "3")
+		{
+			ratio.protein = std::to_string((int)(MACRO_RATIO_GAIN_PROTEIN * calories / PROTEIN_CALORIES_PER_GRAM));
+			ratio.fat = std::to_string((int)(MACRO_RATIO_GAIN_FAT * calories / FAT_CALORIES_PER_GRAM));
+			ratio.carbohydrates = std::to_string((int)(MACRO_RATIO_GAIN_CARBOHYDRATES * calories / CARBOHYDRATE_CALORIES_PER_GRAM));
+		}
 	}
 
 	DailySummary createDailySummary(User user, Goal goal, int days)
