@@ -9,8 +9,6 @@ namespace dal
 		start = (end == std::string::npos) ? std::string::npos : end + 1;
 	}
 
-#pragma region Users
-
 	std::vector<User> readDataFromUsersFile()
 	{
 		std::vector<User> users;
@@ -92,6 +90,9 @@ namespace dal
 				return user;
 			}
 		}
+
+		// Return an empty User object if not found
+		return User();
 	}
 
 	User getUserById(std::string id)
@@ -155,9 +156,6 @@ namespace dal
 		}
 	}
 
-#pragma endregion
-
-#pragma region Goals
 
 	std::vector<Goal> readDataFromGoalsFile()
 	{
@@ -223,6 +221,9 @@ namespace dal
 				return goal;
 			}
 		}
+
+		// Return an empty Goal object if not found
+		return Goal();
 	}
 
 	std::vector<Goal> getGoalsByUserId(std::string id)
@@ -273,9 +274,6 @@ namespace dal
 
 	}
 
-#pragma endregion
-
-#pragma region Meals
 
 	std::vector<Meal> readDataFromMealsFile()
 	{
@@ -350,6 +348,9 @@ namespace dal
 				return meal;
 			}
 		}
+
+		// Return an empty Meal object if not found
+		return Meal();
 	}	
 
 	std::vector<Meal> getMealsByUserId(std::string id, bool forToday, int days)
@@ -409,9 +410,6 @@ namespace dal
 	
 	}
 
-#pragma endregion
-
-#pragma region Workouts
 
 	std::vector<Workout> readDataFromWorkoutsFile()
 	{
@@ -480,6 +478,9 @@ namespace dal
 				return workout;
 			}
 		}
+
+		// Return an empty Workout object if not found
+		return Workout();
 	}
 
 	std::vector<Workout> getWorkoutsByUserId(std::string id, bool forToday, int days)
@@ -532,9 +533,6 @@ namespace dal
 		}
 	}	
 
-#pragma endregion
-
-#pragma region DailySummaries
 
 	std::vector<DailySummary> readDataFromDailySummariesFile()
 	{
@@ -618,18 +616,21 @@ namespace dal
 		return result;
 	}
 
-	DailySummary getDailySummaryByUserIdToday(std::string id, int days)
-	{
-		std::vector<DailySummary> dailySummaries = readDataFromDailySummariesFile();
+    DailySummary getDailySummaryByUserIdToday(std::string id, int days)
+    {
+        std::vector<DailySummary> dailySummaries = readDataFromDailySummariesFile();
 
-		for (DailySummary dailySummary : dailySummaries)
-		{
-			if (dailySummary.userId == id && dailySummary.date == tools::getDatetime(DATE_FORMAT, days))
-			{
-				return dailySummary;
-			}
-		}
-	}
+        for (DailySummary dailySummary : dailySummaries)
+        {
+            if (dailySummary.userId == id && dailySummary.date == tools::getDatetime(DATE_FORMAT, days))
+            {
+                return dailySummary;
+            }
+        }
+
+        // Return an empty DailySummary object if not found
+        return DailySummary();
+    }
 
 	void updateOrDeleteDailySummary(DailySummary dailySummary, bool isUpdate)
 	{
@@ -675,6 +676,4 @@ namespace dal
 			}
 		}
 	}
-
-#pragma endregion
 }

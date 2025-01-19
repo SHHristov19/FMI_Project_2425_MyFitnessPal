@@ -197,10 +197,6 @@ namespace bll
 			{
 				dailySummary = createDailySummary(user, goal, days);
 			}
-			else
-			{
-				// TO DO createGoal() GO TO DailySummary dailySummary = dal::getDailySummaryByUserUdToday(user.id);
-			}
 		}
 		if (!dailySummary.id.empty())
 		{
@@ -703,8 +699,6 @@ namespace bll
 		tools::resetColor();
 
 		enterUserData(user, goal, true);
-
-
 	}
 
 	void deleteMealForUser(User user, Meal meal, DailySummary dailySummary)

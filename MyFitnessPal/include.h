@@ -252,15 +252,36 @@ namespace tools
 	// Function to get user input
 	std::string getInput();
 
-	void enterValidPassword(std::string& password, bool isUpdate = false);
-	std::string validatePassword(std::string password, bool isChangePassword);
-	void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string& type, std::string msg, bool isUpdate = false);
-	void enterValidString(std::string& data, std::string msg, bool isUpdate = false);
-	void enterValidAge(std::string& age, std::string msg, bool isUpdate = false);
-	void enterValidMeasurements(std::string& measurements, std::string msg, bool isUpdate = false);
-	void enterValidCaloriesAndGrams(std::string& data, std::string msg, bool isUpdate = false);
-	void displayErrorAndClearLine();
-	void printActivityLevels();
-	void printGoalTypes();
-	bool isStringOnlyDigits(std::string data);
+    // Function to enter a valid password
+    void enterValidPassword(std::string& password, bool isUpdate = false);
+
+    // Function to validate a password
+    std::string validatePassword(std::string password, bool isChangePassword);
+
+    // Function to enter a valid type
+    void enterValidType(const std::string types[], size_t typeSize, std::string errorMsg, std::string& type, std::string msg, bool isUpdate = false);
+
+    // Function to enter a valid string
+    void enterValidString(std::string& data, std::string msg, bool isUpdate = false);
+
+    // Function to enter a valid age
+    void enterValidAge(std::string& age, std::string msg, bool isUpdate = false);
+
+    // Function to enter valid measurements
+    void enterValidMeasurements(std::string& measurements, std::string msg, bool isUpdate = false);
+
+    // Function to enter valid calories and grams
+    void enterValidCaloriesAndGrams(std::string& data, std::string msg, bool isUpdate = false);
+
+    // Function to display an error message and clear the current line
+    void displayErrorAndClearLine();
+
+    // Function to print the activity levels
+    void printActivityLevels();
+
+    // Function to print the goal types
+    void printGoalTypes();
+
+    // Function to check if a string contains only digits
+    bool isStringOnlyDigits(std::string data);
 }

@@ -17,7 +17,6 @@ struct User
     std::string createdOn;
 };
 
-// Struct for Goals
 struct Goal
 {
     std::string id;

@@ -1,23 +1,5 @@
 #pragma once
 
-// Struct-like representation for Activity Level
-struct ActivityLevel 
-{
-    const int VeryActive = 1; // Много активен
-    const int ActiveJob = 2; // Активна работа
-    const int ModerateActivity = 3; // Умерена активност
-    const int LightActivity = 4; // Лека активност
-    const int SedentaryJob = 5; // Седяща работа
-};
-
-// Struct - like representation for Goals
-struct GoalType 
-{
-    const int LoseWeight = 1; // Lose weight
-    const int MaintainWeight = 2; // Maintain weight
-    const int GainWeight = 3; // Gain weight
-};
-
 // BMR Constants
 const float BMR_CONSTANT_MEN = 88.362;
 const float BMR_WEIGHT_MULTIPLIER_MEN = 13.397;

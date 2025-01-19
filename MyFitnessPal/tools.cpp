@@ -71,7 +71,7 @@ namespace tools
             }
         }
 
-        return stoi(digits);
+        return digits.empty() ? 0 : stoi(digits);
     }
 
     std::string generateGUID()
@@ -326,7 +326,7 @@ namespace tools
 				return;
 			}
 
-			if (std::cin.fail() || data.empty())
+			if (std::cin.fail() || data.empty() || data.length() > 25)
 			{
 				displayErrorAndClearLine();
 			}
@@ -337,18 +337,27 @@ namespace tools
 		}
 	}
 
-	bool isStringOnlyDigits(std::string data)
-	{
+    bool isStringOnlyDigits(std::string data)
+    {
+		// Check if the string is empty
+		if (data.empty())
+		{
+			return false;
+		}
+
+		// Iterate through each character in the string
 		for (char c : data)
 		{
+			// Check if the character is not a digit
 			if (!std::isdigit(c))
 			{
 				return false;
 			}
 		}
 
-		return data.empty() ? false : true;
-	}
+		// Check if the length of the string is greater than 6
+		return data.length() > 6 ? false : true;
+    }
 
 	void enterValidAge(std::string& age, std::string msg, bool isUpdate)
 	{
